@@ -55,15 +55,21 @@ const {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem;
-  font-family: 'Noto Sans JP', 'Pretendard', -apple-system, sans-serif;
+  padding: 0.75rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
 }
 .quiz-header {
   width: 100%;
-  max-width: 500px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fafbfc;
+  padding: 0.5rem 0;
 }
 </style>

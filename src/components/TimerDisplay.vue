@@ -18,20 +18,21 @@ const urgency = computed(() => {
 
 <template>
   <div class="timer" :class="urgency">
-    ⏱ {{ display }}
+    {{ display }}
   </div>
 </template>
 
 <style scoped>
 .timer {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 0.9rem;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  text-align: center;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
-.normal { color: #333; background: #e8f5e9; }
+.normal { color: #333; background: #eee; }
 .warning { color: #e65100; background: #fff3e0; }
 .urgent { color: #c62828; background: #ffebee; animation: pulse 1s infinite; }
 

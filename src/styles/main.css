@@ -8,13 +8,22 @@
   padding: 0;
 }
 
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   font-family: 'Noto Sans JP', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
   background: #fafbfc;
   color: #333;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
 }
 
 button {
   font-family: inherit;
+  -webkit-appearance: none;
+  touch-action: manipulation;
 }

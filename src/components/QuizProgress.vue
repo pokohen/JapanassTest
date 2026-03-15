@@ -8,34 +8,38 @@ const percentage = computed(() => ((props.current) / props.total) * 100);
 
 <template>
   <div class="progress-container">
-    <div class="progress-text">{{ current + 1 }} / {{ total }}</div>
     <div class="progress-bar">
       <div class="progress-fill" :style="{ width: percentage + '%' }"></div>
     </div>
+    <span class="progress-text">{{ current + 1 }}/{{ total }}</span>
   </div>
 </template>
 
 <style scoped>
 .progress-container {
-  width: 100%;
-}
-.progress-text {
-  text-align: center;
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 0.4rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 .progress-bar {
-  width: 100%;
-  height: 8px;
+  flex: 1;
+  height: 6px;
   background: #e0e0e0;
-  border-radius: 4px;
+  border-radius: 3px;
   overflow: hidden;
 }
 .progress-fill {
   height: 100%;
-  background: #4caf50;
-  border-radius: 4px;
+  background: #222;
+  border-radius: 3px;
   transition: width 0.3s ease;
+}
+.progress-text {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 </style>
