@@ -2,6 +2,7 @@ export interface Word {
   kanji: string;
   reading: string;
   meaning: string;
+  example?: string;
 }
 
 export interface QuizQuestion {
