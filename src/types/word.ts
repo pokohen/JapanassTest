@@ -33,3 +33,4 @@ export interface QuestionResult {
 }
 
 export type QuizState = 'IDLE' | 'IN_PROGRESS' | 'FINISHED';
+export type QuizMode = 'exam' | 'review';

@@ -16,10 +16,11 @@ const timeDisplay = computed(() => {
 });
 
 const grade = computed(() => {
-  if (percentage.value >= 90) return { text: '우수', color: '#2e7d32' };
-  if (percentage.value >= 70) return { text: '양호', color: '#1565c0' };
-  if (percentage.value >= 50) return { text: '보통', color: '#e65100' };
-  return { text: '노력 필요', color: '#c62828' };
+  if (percentage.value >= 100) return { text: '완벽', color: '#2e7d32' };
+  if (percentage.value >= 90) return { text: '우수', color: '#388e3c' };
+  if (percentage.value >= 70) return { text: '양호', color: '#1976d2' };
+  if (percentage.value >= 50) return { text: '보통', color: '#f57c00' };
+  return { text: '노력 필요', color: '#d32f2f' };
 });
 </script>
 

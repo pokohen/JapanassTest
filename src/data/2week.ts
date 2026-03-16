@@ -1,0 +1,166 @@
+import type { Word } from "../types/word";
+
+const words: Word[] = [
+  {
+    kanji: "近い",
+    reading: "ちかい",
+    meaning: "가깝다",
+    example: "駅が近いです。",
+  },
+  {
+    kanji: "地理",
+    reading: "ちり",
+    meaning: "지리",
+    example: "地理の勉強をしています。",
+  },
+  {
+    kanji: "使う",
+    reading: "つかう",
+    meaning: "사용하다",
+    example: "パソコンを使います。",
+  },
+  {
+    kanji: "着く",
+    reading: "つく",
+    meaning: "도착하다",
+    example: "駅に着きました。",
+  },
+  {
+    kanji: "机",
+    reading: "つくえ",
+    meaning: "책상",
+    example: "新しい机を買いました。",
+  },
+  {
+    kanji: "都合",
+    reading: "つごう",
+    meaning: "사정, 형편",
+    example: "都合が悪いです。",
+  },
+  {
+    kanji: "強い",
+    reading: "つよい",
+    meaning: "강하다",
+    example: "彼はとても強いです。",
+  },
+  {
+    kanji: "遠い",
+    reading: "とおい",
+    meaning: "멀다",
+    example: "駅が遠いです。",
+  },
+  {
+    kanji: "通る",
+    reading: "とおる",
+    meaning: "지나다",
+    example: "道を通ります。",
+  },
+  {
+    kanji: "都会",
+    reading: "とかい",
+    meaning: "도시",
+    example: "都会に住んでいます。",
+  },
+  {
+    kanji: "特別だ",
+    reading: "とくべつだ",
+    meaning: "특별하다",
+    example: "今日は特別な日です。",
+  },
+  { kanji: "夏", reading: "なつ", meaning: "여름", example: "夏は暑いです。" },
+  {
+    kanji: "習う",
+    reading: "ならう",
+    meaning: "배우다",
+    example: "日本語を習います。",
+  },
+  {
+    kanji: "何枚",
+    reading: "なんまい",
+    meaning: "몇 매, 몇 장",
+    example: "写真を何枚撮りましたか。",
+  },
+  {
+    kanji: "2台",
+    reading: "だい",
+    meaning: "두 대",
+    example: "車が2台あります。",
+  },
+  {
+    kanji: "入院",
+    reading: "にゅういん",
+    meaning: "입원",
+    example: "病院に入院しました。",
+  },
+  {
+    kanji: "眠い",
+    reading: "ねむい",
+    meaning: "졸리다",
+    example: "今日はとても眠いです。",
+  },
+  {
+    kanji: "眠る",
+    reading: "ねむる",
+    meaning: "자다",
+    example: "早く眠ります。",
+  },
+  {
+    kanji: "乗る",
+    reading: "のる",
+    meaning: "타다",
+    example: "バスに乗ります。",
+  },
+  { kanji: "春", reading: "はる", meaning: "봄", example: "春は暖かいです。" },
+  {
+    kanji: "早い",
+    reading: "はやい",
+    meaning: "빠르다",
+    example: "電車は早いです。",
+  },
+  {
+    kanji: "反対",
+    reading: "はんたい",
+    meaning: "반대",
+    example: "意見が反対です。",
+  },
+  {
+    kanji: "光る",
+    reading: "ひかる",
+    meaning: "빛나다",
+    example: "星が光っています。",
+  },
+  {
+    kanji: "引く",
+    reading: "ひく",
+    meaning: "당기다",
+    example: "ロープを引きます。",
+  },
+  {
+    kanji: "広い",
+    reading: "ひろい",
+    meaning: "넓다",
+    example: "部屋が広いです。",
+  },
+  {
+    kanji: "太い",
+    reading: "ふとい",
+    meaning: "굵다",
+    example: "このロープは太いです。",
+  },
+  { kanji: "船", reading: "ふね", meaning: "배", example: "船に乗ります。" },
+  { kanji: "冬", reading: "ふゆ", meaning: "겨울", example: "冬は寒いです。" },
+  {
+    kanji: "不便だ",
+    reading: "ふべんだ",
+    meaning: "불편하다",
+    example: "この場所は不便です。",
+  },
+  {
+    kanji: "待つ",
+    reading: "まつ",
+    meaning: "기다리다",
+    example: "駅で友達を待ちます。",
+  },
+];
+
+export default words;

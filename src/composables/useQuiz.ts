@@ -1,16 +1,15 @@
 import { ref, computed } from 'vue';
-import type { QuizQuestion, QuizResult, QuizState, QuestionResult } from '../types/word';
+import type { QuizQuestion, QuizResult, QuizState, QuestionResult, QuizMode } from '../types/word';
 import { getNewWords, getReviewWords, getLatestWeekNumber, getTotalWeekCount } from '../data';
 import { pickRandom, shuffle } from '../utils/shuffle';
 import { generateReadingChoices, generateMeaningChoices } from '../utils/choiceGenerator';
 import { useTimer } from './useTimer';
 
-const NEW_WORD_COUNT = 20;
-const REVIEW_WORD_COUNT = 10;
 const TOTAL_QUESTIONS = 30;
 
 export function useQuiz() {
   const state = ref<QuizState>('IDLE');
+  const mode = ref<QuizMode>('exam');
   const questions = ref<QuizQuestion[]>([]);
   const currentIndex = ref(0);
   const result = ref<QuizResult | null>(null);
@@ -37,11 +36,17 @@ export function useQuiz() {
     let selectedReview: typeof reviewWords;
 
     if (reviewWords.length === 0) {
+      // 복습 단어가 없으면 새 단어에서 전부
       selectedNew = pickRandom(newWords, TOTAL_QUESTIONS);
       selectedReview = [];
+    } else if (mode.value === 'exam') {
+      // 시험 모드: 새 단어 20 + 복습 10
+      selectedNew = pickRandom(newWords, 20);
+      selectedReview = pickRandom(reviewWords, 10);
     } else {
-      selectedReview = pickRandom(reviewWords, REVIEW_WORD_COUNT);
-      selectedNew = pickRandom(newWords, NEW_WORD_COUNT);
+      // 복습 모드: 복습 20 + 새 단어 10
+      selectedReview = pickRandom(reviewWords, 20);
+      selectedNew = pickRandom(newWords, 10);
     }
 
     const pool = allWords.length > 0 ? allWords : newWords;
@@ -69,7 +74,8 @@ export function useQuiz() {
     };
   }
 
-  function startQuiz() {
+  function startQuiz(selectedMode: QuizMode) {
+    mode.value = selectedMode;
     questions.value = buildQuestions();
     currentIndex.value = 0;
     result.value = null;
@@ -139,6 +145,7 @@ export function useQuiz() {
 
   function resetQuiz() {
     state.value = 'IDLE';
+    mode.value = 'exam';
     questions.value = [];
     currentIndex.value = 0;
     result.value = null;
@@ -147,6 +154,7 @@ export function useQuiz() {
 
   return {
     state,
+    mode,
     questions,
     currentIndex,
     currentQuestion,
