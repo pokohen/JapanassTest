@@ -5,7 +5,7 @@ import { pickRandom, shuffle } from '../utils/shuffle';
 import { generateReadingChoices, generateMeaningChoices } from '../utils/choiceGenerator';
 import { useTimer } from './useTimer';
 
-const TOTAL_QUESTIONS = 30;
+const TOTAL_QUESTIONS = 40;
 
 export function useQuiz() {
   const state = ref<QuizState>('IDLE');
@@ -40,12 +40,12 @@ export function useQuiz() {
       selectedNew = pickRandom(newWords, TOTAL_QUESTIONS);
       selectedReview = [];
     } else if (mode.value === 'exam') {
-      // 시험 모드: 새 단어 20 + 복습 10
-      selectedNew = pickRandom(newWords, 20);
-      selectedReview = pickRandom(reviewWords, 10);
+      // 시험 모드: 새 단어 25 + 복습 15
+      selectedNew = pickRandom(newWords, 25);
+      selectedReview = pickRandom(reviewWords, 15);
     } else {
-      // 복습 모드: 복습 20 + 새 단어 10
-      selectedReview = pickRandom(reviewWords, 20);
+      // 복습 모드: 복습 30 + 새 단어 10
+      selectedReview = pickRandom(reviewWords, 30);
       selectedNew = pickRandom(newWords, 10);
     }
 
