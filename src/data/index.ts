@@ -1,11 +1,13 @@
-import type { Word } from '../types/word';
-import week1 from './1week';
-import week2 from './2week';
+import type { Word } from "../types/word";
+import week1 from "./1week";
+import week2 from "./2week";
+import week3 from "./3week";
 // 새로운 주차를 추가할 때 아래에 import를 추가하세요
 
 const weekMap: Record<number, Word[]> = {
   1: week1,
   2: week2,
+  3: week3,
 };
 
 export function getLatestWeekNumber(): number {
