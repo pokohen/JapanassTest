@@ -6,6 +6,8 @@ import QuizProgress from './components/QuizProgress.vue';
 import QuizResults from './components/QuizResults.vue';
 import TimerDisplay from './components/TimerDisplay.vue';
 
+const isDev = import.meta.env.DEV;
+
 const {
   state,
   questions,
@@ -17,6 +19,7 @@ const {
   remainingSeconds,
   startQuiz,
   answerQuestion,
+  devSkipToResult,
   resetQuiz,
 } = useQuiz();
 </script>
@@ -29,6 +32,9 @@ const {
       :total-weeks="totalWeeks"
       @start="startQuiz"
     />
+    <button v-if="isDev && state === 'IDLE'" class="dev-btn" @click="devSkipToResult">
+      DEV: 결과 바로가기
+    </button>
 
     <template v-else-if="state === 'IN_PROGRESS' && currentQuestion">
       <div class="quiz-header">
@@ -72,4 +78,15 @@ const {
   background: #fafbfc;
   padding: 0.5rem 0;
 }
+.dev-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  color: white;
+  background: #d32f2f;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.dev-btn:hover { opacity: 1; }
 </style>

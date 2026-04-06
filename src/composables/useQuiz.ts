@@ -143,6 +143,17 @@ export function useQuiz() {
     };
   }
 
+  function devSkipToResult() {
+    mode.value = 'exam';
+    questions.value = buildQuestions();
+    for (const q of questions.value) {
+      q.selectedReading = '틀린답';
+      q.selectedMeaning = '틀린답';
+    }
+    state.value = 'FINISHED';
+    result.value = calculateResult();
+  }
+
   function resetQuiz() {
     state.value = 'IDLE';
     mode.value = 'exam';
@@ -164,6 +175,7 @@ export function useQuiz() {
     remainingSeconds: timer.remainingSeconds,
     startQuiz,
     answerQuestion,
+    devSkipToResult,
     resetQuiz,
   };
 }

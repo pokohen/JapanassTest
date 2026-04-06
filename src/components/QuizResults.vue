@@ -22,6 +22,10 @@ const grade = computed(() => {
   if (percentage.value >= 50) return { text: '보통', color: '#f57c00' };
   return { text: '노력 필요', color: '#d32f2f' };
 });
+
+function parseRuby(text: string): string {
+  return text.replace(/\{([^|]+)\|([^}]+)\}/g, '<ruby>$1<rp>(</rp><rt>$2</rt><rp>)</rp></ruby>');
+}
 </script>
 
 <template>
@@ -73,6 +77,10 @@ const grade = computed(() => {
           <div :class="d.meaningCorrect ? 'correct' : 'wrong'">
             뜻: {{ d.selectedMeaning }}
             <span v-if="!d.meaningCorrect" class="answer"> → {{ d.word.meaning }}</span>
+          </div>
+          <div v-if="d.word.example_reading" class="example" v-html="'例: ' + parseRuby(d.word.example_reading)" />
+          <div v-else-if="d.word.example" class="example">
+            例: {{ d.word.example }}
           </div>
         </div>
       </div>
@@ -141,7 +149,21 @@ const grade = computed(() => {
   text-align: center;
   color: #1a237e;
 }
+.detail-kanji rt {
+  font-size: 0.55rem;
+  color: #666;
+}
 .detail-answers { font-size: 0.9rem; }
+.example {
+  margin-top: 0.3rem;
+  color: #555;
+  font-size: 1.05rem;
+  line-height: 2;
+}
+.example :deep(rt) {
+  font-size: 0.6rem;
+  color: #888;
+}
 .correct { color: #2e7d32; }
 .wrong { color: #c62828; }
 .answer { font-weight: 600; }

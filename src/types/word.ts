@@ -3,6 +3,7 @@ export interface Word {
   reading: string;
   meaning: string;
   example?: string;
+  example_reading?: string;
 }
 
 export interface QuizQuestion {
