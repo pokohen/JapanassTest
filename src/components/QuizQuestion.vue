@@ -1,27 +1,38 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
 import type { QuizQuestion } from '../types/word';
+import { formLabel } from '../utils/conjugation';
 
 const props = defineProps<{ question: QuizQuestion }>();
-const emit = defineEmits<{ answer: [reading: string, meaning: string] }>();
+const emit = defineEmits<{
+  answer: [payload: { reading?: string; meaning?: string; selected?: string }]
+}>();
 
 const selectedReading = ref<string | null>(null);
 const selectedMeaning = ref<string | null>(null);
+const selectedConjugation = ref<string | null>(null);
+
+const conjugationLabel = computed(() =>
+  props.question.type === 'conjugation'
+    ? formLabel(props.question.item, props.question.form)
+    : '',
+);
 
 watch(
   () => props.question,
   () => {
     selectedReading.value = null;
     selectedMeaning.value = null;
+    selectedConjugation.value = null;
     window.scrollTo({ top: 0 });
   },
 );
 
 const exampleParts = computed(() => {
+  if (props.question.type !== 'word') return null;
   const { example, kanji } = props.question.word;
   if (!example) return null;
 
-  // 1) 정확히 일치하면 바로 사용
   const exactIdx = example.indexOf(kanji);
   if (exactIdx !== -1) {
     return {
@@ -31,18 +42,14 @@ const exampleParts = computed(() => {
     };
   }
 
-  // 2) 활용형 대응: kanji의 앞부분(어근)으로 매칭 후 활용 부분까지 포함
-  //    例: 洗う → 洗って, 教える → 教えて, 足りる → 足りない
   const particles = 'をがはにでともへのよねか。、';
   for (let len = kanji.length - 1; len >= 1; len--) {
     const stem = kanji.slice(0, len);
     const stemIdx = example.indexOf(stem);
     if (stemIdx === -1) continue;
 
-    // 어근 위치에서 활용 부분 끝까지 확장
     let end = stemIdx + stem.length;
     while (end < example.length && !particles.includes(example[end])) {
-      // 다음 한자가 나오면 (원래 단어에 없는 한자) 중단
       if (isKanji(example[end]) && !kanji.includes(example[end])) break;
       end++;
     }
@@ -53,7 +60,6 @@ const exampleParts = computed(() => {
     };
   }
 
-  // 3) 매칭 실패 시 밑줄 없이 예문만 표시
   return { before: example, word: '', after: '' };
 });
 
@@ -63,73 +69,128 @@ function isKanji(ch: string): boolean {
 }
 
 function submit() {
-  if (selectedReading.value && selectedMeaning.value) {
-    emit('answer', selectedReading.value, selectedMeaning.value);
+  if (props.question.type === 'word') {
+    if (selectedReading.value && selectedMeaning.value) {
+      emit('answer', {
+        reading: selectedReading.value,
+        meaning: selectedMeaning.value,
+      });
+    }
+  } else {
+    if (selectedConjugation.value) {
+      emit('answer', { selected: selectedConjugation.value });
+    }
   }
 }
+
+const canSubmit = computed(() => {
+  if (props.question.type === 'word') {
+    return !!selectedReading.value && !!selectedMeaning.value;
+  }
+  return !!selectedConjugation.value;
+});
 </script>
 
 <template>
   <div class="question-container">
-    <div class="question-paper">
-      <div class="paper-header">
-        <span class="badge" :class="question.isFromNewWords ? 'new' : 'review'">
-          {{ question.isFromNewWords ? '新出' : '復習' }}
-        </span>
-        <span class="mondai-label">問題</span>
+    <!-- 단어 문제 -->
+    <template v-if="question.type === 'word'">
+      <div class="question-paper">
+        <div class="paper-header">
+          <span class="badge" :class="question.isFromNewWords ? 'new' : 'review'">
+            {{ question.isFromNewWords ? '新出' : '復習' }}
+          </span>
+          <span class="mondai-label">問題</span>
+        </div>
+
+        <div class="mondai-box">
+          <p v-if="exampleParts" class="example-sentence">
+            {{ exampleParts.before }}<span class="underline-word">{{ exampleParts.word }}</span>{{ exampleParts.after }}
+          </p>
+          <p v-else class="example-sentence standalone">
+            {{ question.word.kanji }}
+          </p>
+        </div>
       </div>
 
-      <div class="mondai-box">
-        <p v-if="exampleParts" class="example-sentence">
-          {{ exampleParts.before }}<span class="underline-word">{{ exampleParts.word }}</span>{{ exampleParts.after }}
-        </p>
-        <p v-else class="example-sentence standalone">
-          {{ question.word.kanji }}
-        </p>
+      <div class="section">
+        <h3 class="section-title">
+          <span class="section-number">1</span>
+          <span class="underline-word text-large">{{ question.word.kanji }}</span> の読み方は？
+        </h3>
+        <div class="choices">
+          <button
+            v-for="(choice, i) in question.readingChoices"
+            :key="choice"
+            class="choice-btn"
+            :class="{ selected: selectedReading === choice }"
+            @click="selectedReading = choice"
+          >
+            <span class="choice-number">{{ i + 1 }}</span>
+            {{ choice }}
+          </button>
+        </div>
       </div>
-    </div>
 
-    <div class="section">
-      <h3 class="section-title">
-        <span class="section-number">1</span>
-        <span class="underline-word text-large">{{ question.word.kanji }}</span> の読み方は？
-      </h3>
-      <div class="choices">
-        <button
-          v-for="(choice, i) in question.readingChoices"
-          :key="choice"
-          class="choice-btn"
-          :class="{ selected: selectedReading === choice }"
-          @click="selectedReading = choice"
-        >
-          <span class="choice-number">{{ i + 1 }}</span>
-          {{ choice }}
-        </button>
+      <div class="section">
+        <h3 class="section-title">
+          <span class="section-number">2</span>
+          <span class="underline-word text-large">{{ question.word.kanji }}</span> の意味は？
+        </h3>
+        <div class="choices">
+          <button
+            v-for="(choice, i) in question.meaningChoices"
+            :key="choice"
+            class="choice-btn"
+            :class="{ selected: selectedMeaning === choice }"
+            @click="selectedMeaning = choice"
+          >
+            <span class="choice-number">{{ i + 1 }}</span>
+            {{ choice }}
+          </button>
+        </div>
       </div>
-    </div>
+    </template>
 
-    <div class="section">
-      <h3 class="section-title">
-        <span class="section-number">2</span>
-        <span class="underline-word text-large">{{ question.word.kanji }}</span> の意味は？
-      </h3>
-      <div class="choices">
-        <button
-          v-for="(choice, i) in question.meaningChoices"
-          :key="choice"
-          class="choice-btn"
-          :class="{ selected: selectedMeaning === choice }"
-          @click="selectedMeaning = choice"
-        >
-          <span class="choice-number">{{ i + 1 }}</span>
-          {{ choice }}
-        </button>
+    <!-- 활용 문제 -->
+    <template v-else>
+      <div class="question-paper">
+        <div class="paper-header">
+          <span class="badge conjugation">活用</span>
+          <span class="mondai-label">問題</span>
+        </div>
+
+        <div class="mondai-box">
+          <p class="example-sentence standalone">{{ question.item.base }}</p>
+          <p class="conj-sub">
+            {{ question.item.reading }} · {{ question.item.meaning }}
+          </p>
+        </div>
       </div>
-    </div>
+
+      <div class="section">
+        <h3 class="section-title">
+          <span class="section-number">?</span>
+          「<span class="underline-word text-large">{{ question.item.base }}</span>」 の <b>{{ conjugationLabel }}</b>은?
+        </h3>
+        <div class="choices">
+          <button
+            v-for="(choice, i) in question.choices"
+            :key="choice"
+            class="choice-btn"
+            :class="{ selected: selectedConjugation === choice }"
+            @click="selectedConjugation = choice"
+          >
+            <span class="choice-number">{{ i + 1 }}</span>
+            {{ choice }}
+          </button>
+        </div>
+      </div>
+    </template>
 
     <button
       class="next-btn"
-      :disabled="!selectedReading || !selectedMeaning"
+      :disabled="!canSubmit"
       @click="submit"
     >
       다음 문제
@@ -145,7 +206,6 @@ function submit() {
   width: 100%;
 }
 
-/* 시험지 스타일 */
 .question-paper {
   background: #fff;
   border: 2px solid #222;
@@ -175,6 +235,12 @@ function submit() {
 }
 .badge.new { background: #222; color: #fff; }
 .badge.review { background: #fff; color: #222; border: 1px solid #222; }
+.badge.conjugation { background: #1a237e; color: #fff; }
+.conj-sub {
+  margin: 0.6rem 0 0;
+  font-size: 0.9rem;
+  color: #666;
+}
 
 .mondai-box {
   text-align: center;
@@ -193,7 +259,6 @@ function submit() {
   font-size: 3rem;
   font-weight: 700;
 }
-
 .underline-word {
   text-decoration: underline;
   text-decoration-thickness: 2.5px;
@@ -201,7 +266,6 @@ function submit() {
   font-weight: 700;
 }
 
-/* 선택지 영역 */
 .section-title {
   font-size: 1rem;
   color: #333;
@@ -226,6 +290,9 @@ function submit() {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
+}
+.choices-single {
+  grid-template-columns: 1fr;
 }
 .choice-btn {
   display: flex;
@@ -291,7 +358,6 @@ function submit() {
   font-size: 1.3rem;
 }
 
-/* 모바일 세로 화면에서 선택지 1열 */
 @media (max-width: 400px) {
   .choices {
     grid-template-columns: 1fr;

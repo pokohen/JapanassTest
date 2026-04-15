@@ -1,25 +1,37 @@
 import { ref, computed } from "vue";
 import type {
   QuizQuestion,
+  WordQuestion,
+  ConjugationQuestion,
   QuizResult,
   QuizState,
   QuestionResult,
   QuizMode,
+  Word,
+  ConjugationItem,
+  ConjForm,
 } from "../types/word";
 import {
   getNewWords,
   getReviewWords,
   getLatestWeekNumber,
   getTotalWeekCount,
+  getConjugationItems,
 } from "../data";
 import { pickRandom, shuffle } from "../utils/shuffle";
 import {
   generateReadingChoices,
   generateMeaningChoices,
 } from "../utils/choiceGenerator";
+import {
+  conjugate,
+  availableForms,
+  generateDistractors,
+} from "../utils/conjugation";
 import { useTimer } from "./useTimer";
 
-const TOTAL_QUESTIONS = 50;
+const TOTAL_WORD_QUESTIONS = 50;
+const TOTAL_CONJUGATION_QUESTIONS = 5;
 
 export function useQuiz() {
   const state = ref<QuizState>("IDLE");
@@ -48,45 +60,70 @@ export function useQuiz() {
     const reviewWords = getReviewWords();
     const allWords = [...newWords, ...reviewWords];
 
-    let selectedNew: typeof newWords;
-    let selectedReview: typeof reviewWords;
+    let selectedNew: Word[];
+    let selectedReview: Word[];
 
     if (reviewWords.length === 0) {
-      // 복습 단어가 없으면 새 단어에서 전부
-      selectedNew = pickRandom(newWords, TOTAL_QUESTIONS);
+      selectedNew = pickRandom(newWords, TOTAL_WORD_QUESTIONS);
       selectedReview = [];
     } else if (mode.value === "exam") {
-      // 시험 모드: 새 단어 25 + 복습 25
       selectedNew = pickRandom(newWords, 25);
       selectedReview = pickRandom(reviewWords, 25);
     } else {
-      // 복습 모드: 복습 40 + 새 단어 10
       selectedReview = pickRandom(reviewWords, 40);
       selectedNew = pickRandom(newWords, 10);
     }
 
     const pool = allWords.length > 0 ? allWords : newWords;
 
-    const quizQuestions: QuizQuestion[] = [
-      ...selectedNew.map((word) => createQuestion(word, pool, true)),
-      ...selectedReview.map((word) => createQuestion(word, pool, false)),
-    ];
+    const wordQuestions: WordQuestion[] = shuffle([
+      ...selectedNew.map((word) => createWordQuestion(word, pool, true)),
+      ...selectedReview.map((word) => createWordQuestion(word, pool, false)),
+    ]);
 
-    return shuffle(quizQuestions);
+    const conjItems = pickRandom(
+      getConjugationItems(),
+      TOTAL_CONJUGATION_QUESTIONS,
+    );
+    const conjQuestions: ConjugationQuestion[] = conjItems.map((item) =>
+      createConjugationQuestion(item),
+    );
+
+    return [...wordQuestions, ...conjQuestions];
   }
 
-  function createQuestion(
-    word: (typeof questions.value)[0]["word"],
-    pool: (typeof questions.value)[0]["word"][],
+  function createWordQuestion(
+    word: Word,
+    pool: Word[],
     isNew: boolean,
-  ): QuizQuestion {
+  ): WordQuestion {
     return {
+      type: "word",
       word,
       readingChoices: generateReadingChoices(word, pool),
       meaningChoices: generateMeaningChoices(word, pool),
       selectedReading: null,
       selectedMeaning: null,
       isFromNewWords: isNew,
+    };
+  }
+
+  function createConjugationQuestion(
+    item: ConjugationItem,
+  ): ConjugationQuestion {
+    const forms = availableForms(item);
+    const form: ConjForm = forms[Math.floor(Math.random() * forms.length)];
+    const answer = conjugate(item, form);
+    const distractors = generateDistractors(item, answer);
+    const pool = [answer, ...distractors];
+    while (pool.length < 4) pool.push(answer + "?");
+    return {
+      type: "conjugation",
+      item,
+      form,
+      choices: shuffle(pool.slice(0, 4)),
+      answer,
+      selected: null,
     };
   }
 
@@ -100,11 +137,19 @@ export function useQuiz() {
     timer.start();
   }
 
-  function answerQuestion(reading: string, meaning: string) {
+  function answerQuestion(payload: {
+    reading?: string;
+    meaning?: string;
+    selected?: string;
+  }) {
     const q = questions.value[currentIndex.value];
     if (!q) return;
-    q.selectedReading = reading;
-    q.selectedMeaning = meaning;
+    if (q.type === "word") {
+      q.selectedReading = payload.reading ?? null;
+      q.selectedMeaning = payload.meaning ?? null;
+    } else {
+      q.selected = payload.selected ?? null;
+    }
 
     if (currentIndex.value < questions.value.length - 1) {
       currentIndex.value++;
@@ -120,40 +165,59 @@ export function useQuiz() {
     let newTotal = 0;
     let reviewCorrect = 0;
     let reviewTotal = 0;
+    let conjCorrect = 0;
+    let conjTotal = 0;
+    let wordQuestionCount = 0;
     const details: QuestionResult[] = [];
 
     for (const q of questions.value) {
-      const readingCorrect = q.selectedReading === q.word.reading;
-      const meaningCorrect = q.selectedMeaning === q.word.meaning;
+      if (q.type === "word") {
+        wordQuestionCount++;
+        const readingCorrect = q.selectedReading === q.word.reading;
+        const meaningCorrect = q.selectedMeaning === q.word.meaning;
 
-      if (readingCorrect) correctReadings++;
-      if (meaningCorrect) correctMeanings++;
+        if (readingCorrect) correctReadings++;
+        if (meaningCorrect) correctMeanings++;
 
-      const questionScore = (readingCorrect ? 1 : 0) + (meaningCorrect ? 1 : 0);
+        const score = (readingCorrect ? 1 : 0) + (meaningCorrect ? 1 : 0);
+        if (q.isFromNewWords) {
+          newTotal += 2;
+          newCorrect += score;
+        } else {
+          reviewTotal += 2;
+          reviewCorrect += score;
+        }
 
-      if (q.isFromNewWords) {
-        newTotal += 2;
-        newCorrect += questionScore;
+        details.push({
+          type: "word",
+          word: q.word,
+          readingCorrect,
+          meaningCorrect,
+          selectedReading: q.selectedReading ?? "미응답",
+          selectedMeaning: q.selectedMeaning ?? "미응답",
+        });
       } else {
-        reviewTotal += 2;
-        reviewCorrect += questionScore;
+        conjTotal++;
+        const correct = q.selected === q.answer;
+        if (correct) conjCorrect++;
+        details.push({
+          type: "conjugation",
+          item: q.item,
+          form: q.form,
+          answer: q.answer,
+          selected: q.selected ?? "미응답",
+          correct,
+        });
       }
-
-      details.push({
-        word: q.word,
-        readingCorrect,
-        meaningCorrect,
-        selectedReading: q.selectedReading ?? "미응답",
-        selectedMeaning: q.selectedMeaning ?? "미응답",
-      });
     }
 
     return {
-      totalQuestions: questions.value.length,
+      totalQuestions: wordQuestionCount,
       correctReadings,
       correctMeanings,
       newWordScore: { correct: newCorrect, total: newTotal },
       reviewWordScore: { correct: reviewCorrect, total: reviewTotal },
+      conjugationScore: { correct: conjCorrect, total: conjTotal },
       timeElapsed: timer.getElapsedSeconds(),
       details,
     };
@@ -163,8 +227,12 @@ export function useQuiz() {
     mode.value = "exam";
     questions.value = buildQuestions();
     for (const q of questions.value) {
-      q.selectedReading = "틀린답";
-      q.selectedMeaning = "틀린답";
+      if (q.type === "word") {
+        q.selectedReading = "틀린답";
+        q.selectedMeaning = "틀린답";
+      } else {
+        q.selected = "틀린답";
+      }
     }
     state.value = "FINISHED";
     result.value = calculateResult();

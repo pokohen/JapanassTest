@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { QuizResult } from '../types/word';
+import { formLabel } from '../utils/conjugation';
 
 const props = defineProps<{ result: QuizResult }>();
 const emit = defineEmits<{ restart: [] }>();
 
-const totalScore = computed(() => props.result.correctReadings + props.result.correctMeanings);
-const totalPossible = computed(() => props.result.totalQuestions * 2);
+const totalScore = computed(
+  () =>
+    props.result.correctReadings +
+    props.result.correctMeanings +
+    props.result.conjugationScore.correct,
+);
+const totalPossible = computed(
+  () => props.result.totalQuestions * 2 + props.result.conjugationScore.total,
+);
 const percentage = computed(() => Math.round((totalScore.value / totalPossible.value) * 100));
 
 const timeDisplay = computed(() => {
@@ -59,31 +67,46 @@ function parseRuby(text: string): string {
         <span>복습 단어</span>
         <span>{{ result.reviewWordScore.correct }} / {{ result.reviewWordScore.total }}</span>
       </div>
+      <div class="stat-row" v-if="result.conjugationScore.total > 0">
+        <span>활용</span>
+        <span>{{ result.conjugationScore.correct }} / {{ result.conjugationScore.total }}</span>
+      </div>
     </div>
 
     <h3 class="detail-title">상세 결과</h3>
     <div class="detail-list">
-      <div
-        v-for="(d, i) in result.details"
-        :key="i"
-        class="detail-item"
-      >
-        <div class="detail-kanji">{{ d.word.kanji }}</div>
-        <div class="detail-answers">
-          <div :class="d.readingCorrect ? 'correct' : 'wrong'">
-            읽기: {{ d.selectedReading }}
-            <span v-if="!d.readingCorrect" class="answer"> → {{ d.word.reading }}</span>
-          </div>
-          <div :class="d.meaningCorrect ? 'correct' : 'wrong'">
-            뜻: {{ d.selectedMeaning }}
-            <span v-if="!d.meaningCorrect" class="answer"> → {{ d.word.meaning }}</span>
-          </div>
-          <div v-if="d.word.example_reading" class="example" v-html="'例: ' + parseRuby(d.word.example_reading)" />
-          <div v-else-if="d.word.example" class="example">
-            例: {{ d.word.example }}
+      <template v-for="(d, i) in result.details" :key="i">
+        <div v-if="d.type === 'word'" class="detail-item">
+          <div class="detail-kanji">{{ d.word.kanji }}</div>
+          <div class="detail-answers">
+            <div :class="d.readingCorrect ? 'correct' : 'wrong'">
+              읽기: {{ d.selectedReading }}
+              <span v-if="!d.readingCorrect" class="answer"> → {{ d.word.reading }}</span>
+            </div>
+            <div :class="d.meaningCorrect ? 'correct' : 'wrong'">
+              뜻: {{ d.selectedMeaning }}
+              <span v-if="!d.meaningCorrect" class="answer"> → {{ d.word.meaning }}</span>
+            </div>
+            <div v-if="d.word.example_reading" class="example" v-html="'例: ' + parseRuby(d.word.example_reading)" />
+            <div v-else-if="d.word.example" class="example">
+              例: {{ d.word.example }}
+            </div>
           </div>
         </div>
-      </div>
+        <div v-else class="detail-item">
+          <div class="detail-kanji conjugation">活用</div>
+          <div class="detail-answers">
+            <div class="conj-base">
+              {{ d.item.base }}
+              <span class="conj-form">· {{ formLabel(d.item, d.form) }}</span>
+            </div>
+            <div :class="d.correct ? 'correct' : 'wrong'">
+              답: {{ d.selected }}
+              <span v-if="!d.correct" class="answer"> → {{ d.answer }}</span>
+            </div>
+          </div>
+        </div>
+      </template>
     </div>
 
     <button class="restart-btn" @click="emit('restart')">다시 시작</button>
@@ -152,6 +175,23 @@ function parseRuby(text: string): string {
 .detail-kanji rt {
   font-size: 0.55rem;
   color: #666;
+}
+.detail-kanji.conjugation {
+  font-size: 0.85rem;
+  color: #fff;
+  background: #1a237e;
+  border-radius: 4px;
+  padding: 0.3rem 0;
+}
+.conj-base {
+  font-weight: 700;
+  color: #1a237e;
+  margin-bottom: 0.2rem;
+}
+.conj-form {
+  font-weight: 400;
+  color: #666;
+  font-size: 0.85rem;
 }
 .detail-answers { font-size: 0.9rem; }
 .example {
