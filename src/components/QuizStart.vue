@@ -14,10 +14,10 @@ const selectedMode = ref<QuizMode>('exam');
 const hasReview = computed(() => props.totalWeeks > 1);
 
 const composition = computed(() => {
-  if (!hasReview.value) return '새 단어 40';
+  if (!hasReview.value) return '새 단어 50';
   return selectedMode.value === 'exam'
-    ? '새 단어 25 + 복습 15'
-    : '복습 30 + 새 단어 10';
+    ? '새 단어 25 + 복습 25'
+    : '복습 40 + 새 단어 10';
 });
 </script>
 
@@ -34,7 +34,7 @@ const composition = computed(() => {
       >
         <span class="mode-icon">試</span>
         <span class="mode-label">시험 모드</span>
-        <span class="mode-desc">새 단어 25 + 복습 15</span>
+        <span class="mode-desc">새 단어 25 + 복습 25</span>
       </button>
       <button
         class="mode-btn"
@@ -43,7 +43,7 @@ const composition = computed(() => {
       >
         <span class="mode-icon">復</span>
         <span class="mode-label">복습 모드</span>
-        <span class="mode-desc">복습 30 + 새 단어 10</span>
+        <span class="mode-desc">복습 40 + 새 단어 10</span>
       </button>
     </div>
 

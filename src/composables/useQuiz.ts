@@ -1,26 +1,42 @@
-import { ref, computed } from 'vue';
-import type { QuizQuestion, QuizResult, QuizState, QuestionResult, QuizMode } from '../types/word';
-import { getNewWords, getReviewWords, getLatestWeekNumber, getTotalWeekCount } from '../data';
-import { pickRandom, shuffle } from '../utils/shuffle';
-import { generateReadingChoices, generateMeaningChoices } from '../utils/choiceGenerator';
-import { useTimer } from './useTimer';
+import { ref, computed } from "vue";
+import type {
+  QuizQuestion,
+  QuizResult,
+  QuizState,
+  QuestionResult,
+  QuizMode,
+} from "../types/word";
+import {
+  getNewWords,
+  getReviewWords,
+  getLatestWeekNumber,
+  getTotalWeekCount,
+} from "../data";
+import { pickRandom, shuffle } from "../utils/shuffle";
+import {
+  generateReadingChoices,
+  generateMeaningChoices,
+} from "../utils/choiceGenerator";
+import { useTimer } from "./useTimer";
 
-const TOTAL_QUESTIONS = 40;
+const TOTAL_QUESTIONS = 50;
 
 export function useQuiz() {
-  const state = ref<QuizState>('IDLE');
-  const mode = ref<QuizMode>('exam');
+  const state = ref<QuizState>("IDLE");
+  const mode = ref<QuizMode>("exam");
   const questions = ref<QuizQuestion[]>([]);
   const currentIndex = ref(0);
   const result = ref<QuizResult | null>(null);
 
-  const currentQuestion = computed(() => questions.value[currentIndex.value] ?? null);
+  const currentQuestion = computed(
+    () => questions.value[currentIndex.value] ?? null,
+  );
   const latestWeek = computed(() => getLatestWeekNumber());
   const totalWeeks = computed(() => getTotalWeekCount());
 
   function finishQuiz() {
-    if (state.value !== 'IN_PROGRESS') return;
-    state.value = 'FINISHED';
+    if (state.value !== "IN_PROGRESS") return;
+    state.value = "FINISHED";
     timer.stop();
     result.value = calculateResult();
   }
@@ -39,13 +55,13 @@ export function useQuiz() {
       // 복습 단어가 없으면 새 단어에서 전부
       selectedNew = pickRandom(newWords, TOTAL_QUESTIONS);
       selectedReview = [];
-    } else if (mode.value === 'exam') {
-      // 시험 모드: 새 단어 25 + 복습 15
+    } else if (mode.value === "exam") {
+      // 시험 모드: 새 단어 25 + 복습 25
       selectedNew = pickRandom(newWords, 25);
-      selectedReview = pickRandom(reviewWords, 15);
+      selectedReview = pickRandom(reviewWords, 25);
     } else {
-      // 복습 모드: 복습 30 + 새 단어 10
-      selectedReview = pickRandom(reviewWords, 30);
+      // 복습 모드: 복습 40 + 새 단어 10
+      selectedReview = pickRandom(reviewWords, 40);
       selectedNew = pickRandom(newWords, 10);
     }
 
@@ -60,8 +76,8 @@ export function useQuiz() {
   }
 
   function createQuestion(
-    word: typeof questions.value[0]['word'],
-    pool: typeof questions.value[0]['word'][],
+    word: (typeof questions.value)[0]["word"],
+    pool: (typeof questions.value)[0]["word"][],
     isNew: boolean,
   ): QuizQuestion {
     return {
@@ -79,7 +95,7 @@ export function useQuiz() {
     questions.value = buildQuestions();
     currentIndex.value = 0;
     result.value = null;
-    state.value = 'IN_PROGRESS';
+    state.value = "IN_PROGRESS";
     timer.reset();
     timer.start();
   }
@@ -127,8 +143,8 @@ export function useQuiz() {
         word: q.word,
         readingCorrect,
         meaningCorrect,
-        selectedReading: q.selectedReading ?? '미응답',
-        selectedMeaning: q.selectedMeaning ?? '미응답',
+        selectedReading: q.selectedReading ?? "미응답",
+        selectedMeaning: q.selectedMeaning ?? "미응답",
       });
     }
 
@@ -144,19 +160,19 @@ export function useQuiz() {
   }
 
   function devSkipToResult() {
-    mode.value = 'exam';
+    mode.value = "exam";
     questions.value = buildQuestions();
     for (const q of questions.value) {
-      q.selectedReading = '틀린답';
-      q.selectedMeaning = '틀린답';
+      q.selectedReading = "틀린답";
+      q.selectedMeaning = "틀린답";
     }
-    state.value = 'FINISHED';
+    state.value = "FINISHED";
     result.value = calculateResult();
   }
 
   function resetQuiz() {
-    state.value = 'IDLE';
-    mode.value = 'exam';
+    state.value = "IDLE";
+    mode.value = "exam";
     questions.value = [];
     currentIndex.value = 0;
     result.value = null;
