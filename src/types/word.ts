@@ -6,9 +6,9 @@ export interface Word {
   example_reading?: string;
 }
 
-export type ConjugationType = 'godan' | 'ichidan' | 'irregular' | 'i-adj';
+export type ConjugationType = 'godan' | 'ichidan' | 'irregular' | 'i-adj' | 'na-adj';
 export type VerbForm = 'masu' | 'te' | 'ta' | 'nai' | 'potential' | 'volitional';
-export type AdjForm = 'past' | 'negative' | 'adverb' | 'te';
+export type AdjForm = 'past' | 'negative' | 'adverb' | 'te' | 'na-noun' | 'polite';
 export type ConjForm = VerbForm | AdjForm;
 
 export interface ConjugationItem {
@@ -16,6 +16,15 @@ export interface ConjugationItem {
   reading: string;
   meaning: string;
   type: ConjugationType;
+  examples?: ContextExample[];
+}
+
+export interface ContextExample {
+  form: ConjForm;
+  /** 빈칸 자리를 ___ 로 표시한 일본어 문장 */
+  sentence: string;
+  /** 한국어 번역 (완전한 번역 문장) */
+  translation: string;
 }
 
 export interface WordQuestion {
@@ -35,6 +44,8 @@ export interface ConjugationQuestion {
   choices: string[];
   answer: string;
   selected: string | null;
+  /** 있으면 "빈칸 채우기" 모드, 없으면 기본 "dictionary → form" 모드 */
+  context?: ContextExample;
 }
 
 export type QuizQuestion = WordQuestion | ConjugationQuestion;
@@ -55,6 +66,7 @@ export interface ConjugationQuestionResult {
   answer: string;
   selected: string;
   correct: boolean;
+  context?: ContextExample;
 }
 
 export type QuestionResult = WordQuestionResult | ConjugationQuestionResult;

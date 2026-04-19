@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import type { QuizQuestion } from '../types/word';
+import type { QuizQuestion, ConjugationItem, ConjForm } from '../types/word';
 import { formLabel } from '../utils/conjugation';
+import { rubyForItemForm, getReadingsForForm, toRubySegments } from '../utils/furigana';
+import FuriganaText from './FuriganaText.vue';
 
 const props = defineProps<{ question: QuizQuestion }>();
 const emit = defineEmits<{
@@ -17,6 +19,17 @@ const conjugationLabel = computed(() =>
     ? formLabel(props.question.item, props.question.form)
     : '',
 );
+
+function baseRuby(item: ConjugationItem) {
+  return rubyForItemForm(item, undefined, item.base);
+}
+function choiceRuby(item: ConjugationItem, form: ConjForm, text: string) {
+  return rubyForItemForm(item, form, text);
+}
+function sentenceRuby(item: ConjugationItem, sentence: string) {
+  const readings = getReadingsForForm(item, undefined);
+  return toRubySegments(sentence, readings);
+}
 
 watch(
   () => props.question,
@@ -116,7 +129,7 @@ const canSubmit = computed(() => {
       <div class="section">
         <h3 class="section-title">
           <span class="section-number">1</span>
-          <span class="underline-word text-large">{{ question.word.kanji }}</span> の読み方は？
+          <span class="underline-word text-large">{{ question.word.kanji }}</span>의 읽는 방법은?
         </h3>
         <div class="choices">
           <button
@@ -135,7 +148,7 @@ const canSubmit = computed(() => {
       <div class="section">
         <h3 class="section-title">
           <span class="section-number">2</span>
-          <span class="underline-word text-large">{{ question.word.kanji }}</span> の意味は？
+          <span class="underline-word text-large">{{ question.word.kanji }}</span>의 뜻은?
         </h3>
         <div class="choices">
           <button
@@ -160,8 +173,38 @@ const canSubmit = computed(() => {
           <span class="mondai-label">問題</span>
         </div>
 
-        <div class="mondai-box">
-          <p class="example-sentence standalone">{{ question.item.base }}</p>
+        <!-- 컨텍스트(예문 빈칸) 모드 -->
+        <div v-if="question.context" class="mondai-box context-box">
+          <p class="context-sentence">
+            <template
+              v-for="(seg, i) in sentenceRuby(question.item, question.context.sentence.split('___')[0])"
+              :key="`a${i}`"
+            >
+              <ruby v-if="seg.rt">{{ seg.text }}<rt>{{ seg.rt }}</rt></ruby>
+              <template v-else>{{ seg.text }}</template>
+            </template>
+            <span class="blank">___</span>
+            <template
+              v-for="(seg, i) in sentenceRuby(question.item, question.context.sentence.split('___')[1] ?? '')"
+              :key="`b${i}`"
+            >
+              <ruby v-if="seg.rt">{{ seg.text }}<rt>{{ seg.rt }}</rt></ruby>
+              <template v-else>{{ seg.text }}</template>
+            </template>
+          </p>
+          <p class="context-translation">{{ question.context.translation }}</p>
+          <p class="conj-sub">
+            기본형:
+            <FuriganaText :segments="baseRuby(question.item)" class="base-inline" />
+            · {{ question.item.meaning }}
+          </p>
+        </div>
+
+        <!-- 기본(dictionary → form) 모드 -->
+        <div v-else class="mondai-box">
+          <p class="example-sentence standalone">
+            <FuriganaText :segments="baseRuby(question.item)" />
+          </p>
           <p class="conj-sub">
             {{ question.item.reading }} · {{ question.item.meaning }}
           </p>
@@ -169,9 +212,13 @@ const canSubmit = computed(() => {
       </div>
 
       <div class="section">
-        <h3 class="section-title">
+        <h3 v-if="question.context" class="section-title">
           <span class="section-number">?</span>
-          「<span class="underline-word text-large">{{ question.item.base }}</span>」 の <b>{{ conjugationLabel }}</b>은?
+          빈칸에 들어갈 <b>{{ conjugationLabel }}</b>은?
+        </h3>
+        <h3 v-else class="section-title">
+          <span class="section-number">?</span>
+          「<FuriganaText :segments="baseRuby(question.item)" class="inline-ruby" />」의 <b>{{ conjugationLabel }}</b>은?
         </h3>
         <div class="choices">
           <button
@@ -182,7 +229,7 @@ const canSubmit = computed(() => {
             @click="selectedConjugation = choice"
           >
             <span class="choice-number">{{ i + 1 }}</span>
-            {{ choice }}
+            <FuriganaText :segments="choiceRuby(question.item, question.form, choice)" />
           </button>
         </div>
       </div>
@@ -240,6 +287,49 @@ const canSubmit = computed(() => {
   margin: 0.6rem 0 0;
   font-size: 0.9rem;
   color: #666;
+}
+.context-box {
+  padding: 1.2rem 0.75rem;
+  text-align: left;
+}
+.context-sentence {
+  font-size: 1.4rem;
+  line-height: 2.2;
+  color: #111;
+  font-family: 'Noto Sans JP', 'Hiragino Sans', serif;
+  margin: 0 0 0.8rem;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+.context-sentence ruby rt {
+  font-size: 0.5em;
+  color: #666;
+  font-weight: 400;
+}
+.blank {
+  display: inline-block;
+  min-width: 3.5rem;
+  border-bottom: 2.5px solid #1a237e;
+  margin: 0 0.25rem;
+  color: #1a237e;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.1em;
+}
+.context-translation {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.5;
+  padding: 0.5rem 0.7rem;
+  background: #f7f8fa;
+  border-radius: 6px;
+  border-left: 3px solid #bbb;
+}
+.base-inline { font-weight: 600; color: #333; }
+.inline-ruby { display: inline; }
+@media (max-width: 400px) {
+  .context-sentence { font-size: 1.2rem; line-height: 2.1; }
 }
 
 .mondai-box {

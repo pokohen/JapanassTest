@@ -31,7 +31,7 @@ import {
 import { useTimer } from "./useTimer";
 
 const TOTAL_WORD_QUESTIONS = 50;
-const TOTAL_CONJUGATION_QUESTIONS = 5;
+const TOTAL_CONJUGATION_QUESTIONS = 8;
 
 export function useQuiz() {
   const state = ref<QuizState>("IDLE");
@@ -111,8 +111,21 @@ export function useQuiz() {
   function createConjugationQuestion(
     item: ConjugationItem,
   ): ConjugationQuestion {
-    const forms = availableForms(item);
-    const form: ConjForm = forms[Math.floor(Math.random() * forms.length)];
+    const hasExamples = !!item.examples && item.examples.length > 0;
+    const useContext = hasExamples && Math.random() < 0.7;
+
+    let form: ConjForm;
+    let context: ConjugationQuestion["context"];
+
+    if (useContext && item.examples) {
+      const ex = item.examples[Math.floor(Math.random() * item.examples.length)];
+      form = ex.form;
+      context = ex;
+    } else {
+      const forms = availableForms(item);
+      form = forms[Math.floor(Math.random() * forms.length)];
+    }
+
     const answer = conjugate(item, form);
     const distractors = generateDistractors(item, answer);
     const pool = [answer, ...distractors];
@@ -124,6 +137,7 @@ export function useQuiz() {
       choices: shuffle(pool.slice(0, 4)),
       answer,
       selected: null,
+      context,
     };
   }
 
@@ -207,6 +221,7 @@ export function useQuiz() {
           answer: q.answer,
           selected: q.selected ?? "미응답",
           correct,
+          context: q.context,
         });
       }
     }
@@ -238,6 +253,20 @@ export function useQuiz() {
     result.value = calculateResult();
   }
 
+  function devStartConjugationOnly(count = 10) {
+    mode.value = "exam";
+    const conjItems = pickRandom(getConjugationItems(), count);
+    const conjQuestions: ConjugationQuestion[] = conjItems.map((item) =>
+      createConjugationQuestion(item),
+    );
+    questions.value = conjQuestions;
+    currentIndex.value = 0;
+    result.value = null;
+    state.value = "IN_PROGRESS";
+    timer.reset();
+    timer.start();
+  }
+
   function resetQuiz() {
     state.value = "IDLE";
     mode.value = "exam";
@@ -260,6 +289,7 @@ export function useQuiz() {
     startQuiz,
     answerQuestion,
     devSkipToResult,
+    devStartConjugationOnly,
     resetQuiz,
   };
 }

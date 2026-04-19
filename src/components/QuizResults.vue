@@ -1,7 +1,20 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { QuizResult } from '../types/word';
-import { formLabel } from '../utils/conjugation';
+import type { QuizResult, ConjugationItem, ConjForm } from '../types/word';
+import { formLabelFull } from '../utils/conjugation';
+import { rubyForItemForm, getReadingsForForm, toRubySegments } from '../utils/furigana';
+import FuriganaText from './FuriganaText.vue';
+
+function baseRuby(item: ConjugationItem) {
+  return rubyForItemForm(item, undefined, item.base);
+}
+function formRuby(item: ConjugationItem, form: ConjForm, text: string) {
+  return rubyForItemForm(item, form, text);
+}
+function sentenceSegs(item: ConjugationItem, sentence: string) {
+  const readings = getReadingsForForm(item, undefined);
+  return toRubySegments(sentence, readings);
+}
 
 const props = defineProps<{ result: QuizResult }>();
 const emit = defineEmits<{ restart: [] }>();
@@ -97,12 +110,36 @@ function parseRuby(text: string): string {
           <div class="detail-kanji conjugation">活用</div>
           <div class="detail-answers">
             <div class="conj-base">
-              {{ d.item.base }}
-              <span class="conj-form">· {{ formLabel(d.item, d.form) }}</span>
+              <FuriganaText :segments="baseRuby(d.item)" />
+              <span class="conj-form">· {{ formLabelFull(d.item, d.form) }}</span>
+            </div>
+            <div v-if="d.context" class="context-line">
+              예문:
+              <template
+                v-for="(seg, si) in sentenceSegs(d.item, d.context.sentence.split('___')[0])"
+                :key="`s1${si}`"
+              >
+                <ruby v-if="seg.rt">{{ seg.text }}<rt>{{ seg.rt }}</rt></ruby>
+                <template v-else>{{ seg.text }}</template>
+              </template>
+              <span class="answer-inline">
+                <FuriganaText :segments="formRuby(d.item, d.form, d.answer)" />
+              </span>
+              <template
+                v-for="(seg, si) in sentenceSegs(d.item, d.context.sentence.split('___')[1] ?? '')"
+                :key="`s2${si}`"
+              >
+                <ruby v-if="seg.rt">{{ seg.text }}<rt>{{ seg.rt }}</rt></ruby>
+                <template v-else>{{ seg.text }}</template>
+              </template>
             </div>
             <div :class="d.correct ? 'correct' : 'wrong'">
-              답: {{ d.selected }}
-              <span v-if="!d.correct" class="answer"> → {{ d.answer }}</span>
+              답:
+              <FuriganaText :segments="formRuby(d.item, d.form, d.selected)" />
+              <span v-if="!d.correct" class="answer">
+                →
+                <FuriganaText :segments="formRuby(d.item, d.form, d.answer)" />
+              </span>
             </div>
           </div>
         </div>
@@ -192,6 +229,26 @@ function parseRuby(text: string): string {
   font-weight: 400;
   color: #666;
   font-size: 0.85rem;
+}
+.context-line {
+  margin: 0.3rem 0;
+  padding: 0.4rem 0.55rem;
+  font-size: 0.9rem;
+  color: #333;
+  background: #f0f4f8;
+  border-radius: 5px;
+  line-height: 1.9;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+.context-line :deep(rt) { font-size: 0.55em; color: #666; }
+.answer-inline {
+  display: inline-block;
+  padding: 0 0.3rem;
+  font-weight: 700;
+  color: #1a237e;
+  border-bottom: 2px solid #1a237e;
+  margin: 0 0.1rem;
 }
 .detail-answers { font-size: 0.9rem; }
 .example {

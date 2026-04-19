@@ -7,7 +7,7 @@ const props = defineProps<{
   totalWeeks: number;
 }>();
 
-const emit = defineEmits<{ start: [mode: QuizMode] }>();
+const emit = defineEmits<{ start: [mode: QuizMode]; study: [] }>();
 
 const selectedMode = ref<QuizMode>('exam');
 
@@ -54,7 +54,7 @@ const composition = computed(() => {
       </div>
       <div class="info-row">
         <span class="label">총 문제</span>
-        <span class="value">40문제</span>
+        <span class="value">58문제 (단어 50 + 문법 8)</span>
       </div>
       <div class="info-row">
         <span class="label">구성</span>
@@ -76,6 +76,10 @@ const composition = computed(() => {
 
     <button class="start-btn" @click="emit('start', selectedMode)">
       {{ selectedMode === 'exam' ? '시험 시작' : '복습 시작' }}
+    </button>
+
+    <button class="study-btn" @click="emit('study')">
+      📚 기초 문법 공부하기
     </button>
   </div>
 </template>
@@ -178,4 +182,19 @@ const composition = computed(() => {
   max-width: 400px;
 }
 .start-btn:active { background: #000; }
+.study-btn {
+  padding: 0.9rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  background: #fff;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  width: 100%;
+  max-width: 400px;
+}
+.study-btn:hover { border-color: #222; background: #f5f5f5; }
+.study-btn:active { transform: scale(0.98); }
 </style>

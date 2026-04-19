@@ -86,6 +86,17 @@ export function conjugateVerb(item: ConjugationItem, form: VerbForm): string {
 
 export function conjugateAdj(item: ConjugationItem, form: AdjForm): string {
   const base = item.base;
+  if (item.type === 'na-adj') {
+    switch (form) {
+      case 'na-noun': return base + 'な';
+      case 'polite': return base + 'です';
+      case 'past': return base + 'でした';
+      case 'negative': return base + 'じゃない';
+      case 'adverb': return base + 'に';
+      case 'te': return base + 'で';
+    }
+    return base;
+  }
   if (base === 'いい') {
     switch (form) {
       case 'past': return 'よかった';
@@ -101,20 +112,34 @@ export function conjugateAdj(item: ConjugationItem, form: AdjForm): string {
     case 'adverb': return stem + 'く';
     case 'te': return stem + 'くて';
   }
+  return base;
 }
 
 export function conjugate(item: ConjugationItem, form: ConjForm): string {
-  if (item.type === 'i-adj') return conjugateAdj(item, form as AdjForm);
+  if (item.type === 'i-adj' || item.type === 'na-adj') {
+    return conjugateAdj(item, form as AdjForm);
+  }
   return conjugateVerb(item, form as VerbForm);
 }
 
+/** 시험 지시문용: 어미를 공개하지 않아 정답이 노출되지 않음 */
 export function formLabel(item: ConjugationItem, form: ConjForm): string {
+  if (item.type === 'na-adj') {
+    switch (form) {
+      case 'na-noun': return '명사 수식형';
+      case 'polite': return '정중형';
+      case 'past': return '과거형';
+      case 'negative': return '부정형';
+      case 'adverb': return '부사형';
+      case 'te': return 'て형 (연결)';
+    }
+  }
   if (item.type === 'i-adj') {
     switch (form) {
-      case 'past': return '과거형 (~かった)';
-      case 'negative': return '부정형 (~くない)';
-      case 'adverb': return '부사형 (~く)';
-      case 'te': return 'て형 (~くて)';
+      case 'past': return '과거형';
+      case 'negative': return '부정형';
+      case 'adverb': return '부사형';
+      case 'te': return 'て형 (연결)';
     }
   }
   switch (form) {
@@ -128,7 +153,33 @@ export function formLabel(item: ConjugationItem, form: ConjForm): string {
   return '';
 }
 
+/** 공부·결과 페이지용: 어미까지 표시해 학습에 도움 */
+export function formLabelFull(item: ConjugationItem, form: ConjForm): string {
+  if (item.type === 'na-adj') {
+    switch (form) {
+      case 'na-noun': return '명사 수식형 (+な)';
+      case 'polite': return '정중형 (~です)';
+      case 'past': return '과거형 (~でした)';
+      case 'negative': return '부정형 (~じゃない)';
+      case 'adverb': return '부사형 (~に)';
+      case 'te': return 'て형 (~で)';
+    }
+  }
+  if (item.type === 'i-adj') {
+    switch (form) {
+      case 'past': return '과거형 (~かった)';
+      case 'negative': return '부정형 (~くない)';
+      case 'adverb': return '부사형 (~く)';
+      case 'te': return 'て형 (~くて)';
+    }
+  }
+  return formLabel(item, form);
+}
+
 export function availableForms(item: ConjugationItem): ConjForm[] {
+  if (item.type === 'na-adj') {
+    return ['na-noun', 'polite', 'past', 'negative', 'adverb', 'te'];
+  }
   if (item.type === 'i-adj') return ['past', 'negative', 'adverb', 'te'];
   return ['masu', 'te', 'ta', 'nai', 'potential', 'volitional'];
 }
@@ -141,7 +192,26 @@ export function generateDistractors(
   const base = item.base;
   const stem = base.slice(0, -1);
 
-  if (item.type === 'i-adj') {
+  if (item.type === 'na-adj') {
+    const iMixStem = base.endsWith('い') ? base.slice(0, -1) : base;
+    [
+      base + 'な',
+      base + 'です',
+      base + 'でした',
+      base + 'だった',
+      base + 'じゃない',
+      base + 'ではない',
+      base + 'に',
+      base + 'で',
+      // i-adj 규칙 잘못 적용
+      iMixStem + 'かった',
+      iMixStem + 'くない',
+      iMixStem + 'く',
+      iMixStem + 'くて',
+      // 명사 수식 잘못 적용
+      base + 'の',
+    ].forEach((c) => candidates.add(c));
+  } else if (item.type === 'i-adj') {
     const iStem = base === 'いい' ? 'よ' : stem;
     [
       iStem + 'かった',
@@ -150,6 +220,8 @@ export function generateDistractors(
       iStem + 'くて',
       base + 'だった',
       base + 'じゃない',
+      base + 'です',
+      base + 'でした',
       stem + 'った',
       stem + 'くた',
       stem + 'いかった',
