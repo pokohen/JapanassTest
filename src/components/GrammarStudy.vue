@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-type Tab = 'godan' | 'ichidan' | 'irregular' | 'iadj' | 'naadj';
+type Tab = 'godan' | 'ichidan' | 'irregular' | 'iadj' | 'naadj' | 'particle';
 
 const emit = defineEmits<{ back: [] }>();
 const activeTab = ref<Tab>('godan');
@@ -58,6 +58,7 @@ const tabs: { key: Tab; label: string; desc: string }[] = [
   { key: 'irregular', label: '3형식 동사', desc: 'する / 来る 딱 2개뿐! 통째로 외워요' },
   { key: 'iadj', label: 'い형용사', desc: '끝이 い로 끝나는 꾸밈말이에요' },
   { key: 'naadj', label: 'な형용사', desc: '명사를 꾸밀 때 な를 붙이는 꾸밈말이에요' },
+  { key: 'particle', label: '기본 조사', desc: '낱말 뒤에 붙는 작은 글자들! "은/는/이/가" 같은 거예요' },
 ];
 
 const godanRules = [
@@ -328,6 +329,165 @@ const naAdjRules = [
       { base: '有名', result: '有名で', hint: '有名で 人気 = 유명하고 인기가 많아' },
       { base: '元気', result: '元気で', hint: '元気で 明るい = 건강하고 밝아' },
     ],
+  },
+];
+
+interface ParticleSummaryRow { particle: string; meaning: string; role: string }
+const particleSummary: ParticleSummaryRow[] = [
+  { particle: 'は', meaning: '~은/는', role: '누구는, 무엇은' },
+  { particle: 'が', meaning: '~이/가', role: '누가, 뭐가' },
+  { particle: 'を', meaning: '~을/를', role: '~을 (먹다·읽다)' },
+  { particle: 'に', meaning: '~에, ~에게', role: '언제·어디·누구에게' },
+  { particle: 'へ', meaning: '~으로', role: '어디로' },
+  { particle: 'で', meaning: '~에서, ~으로', role: '어디서·무엇으로' },
+  { particle: 'と', meaning: '~와/과', role: '누구랑·무엇이랑' },
+  { particle: 'も', meaning: '~도', role: '나도, 이것도' },
+  { particle: 'から', meaning: '~부터, ~때문에', role: '시작·이유' },
+  { particle: 'まで', meaning: '~까지', role: '끝' },
+  { particle: 'の', meaning: '~의', role: '누구의' },
+  { particle: 'や', meaning: '~(이)나', role: '몇 개만 골라 말하기' },
+  { particle: 'より', meaning: '~보다', role: '비교' },
+  { particle: 'か', meaning: '~까?', role: '물어보기' },
+  { particle: 'ね', meaning: '~네, ~지?', role: '맞장구' },
+  { particle: 'よ', meaning: '~야, ~라고', role: '알려주기' },
+];
+
+const particleRules = [
+  {
+    particle: 'は',
+    title: '"~은/는" — は',
+    desc: '"누구는~", "무엇은~"처럼 무엇에 대해 이야기할지 알려주는 말이에요. 읽을 땐 [와]라고 해요!',
+    examples: [
+      { sentence: '私は学生です。', translation: '저는 학생입니다.' },
+      { sentence: 'これは本です。', translation: '이것은 책입니다.' },
+    ],
+    tip: '읽기 조심! 「は」를 조사로 쓸 땐 [하]가 아니라 [와]로 읽어요.',
+  },
+  {
+    particle: 'が',
+    title: '"~이/가" — が',
+    desc: '"누가 했어?" "뭐가 좋아?"처럼 누군지 무엇인지 딱 말할 때 써요.',
+    examples: [
+      { sentence: '誰が来ましたか。', translation: '누가 왔어요?' },
+      { sentence: '私は猫が好きです。', translation: '저는 고양이를 좋아합니다.' },
+    ],
+    tip: '「は」랑 「が」가 헷갈릴 땐? 처음 나오는 게 누군지 말할 땐 が를 써요!',
+  },
+  {
+    particle: 'を',
+    title: '"~을/를" — を',
+    desc: '"빵을 먹어", "책을 읽어"처럼 뭔가를 하는 그것 뒤에 붙어요. 읽을 땐 [오]라고 해요!',
+    examples: [
+      { sentence: 'パンを食べます。', translation: '빵을 먹습니다.' },
+      { sentence: '映画を見ました。', translation: '영화를 봤어요.' },
+    ],
+    tip: 'を는 거의 항상 조사로만 써요. 낱말 안에서 [오] 소리는 보통 「お」!',
+  },
+  {
+    particle: 'に',
+    title: '"~에, ~에게" — に (만능!)',
+    desc: '"7시에", "학교에 가", "친구에게 줘", "방에 있어" — 언제·어디·누구에게인지 다 말할 수 있어요.',
+    examples: [
+      { sentence: '7時に起きます。', translation: '7시에 일어납니다.' },
+      { sentence: '友達にプレゼントをあげる。', translation: '친구에게 선물을 준다.' },
+      { sentence: '部屋に猫がいます。', translation: '방에 고양이가 있습니다.' },
+    ],
+    tip: '가만히 "있는" 곳은 に, 뭔가를 "하는" 곳은 で! (예: 部屋にいる = 방에 있어 ↔ 部屋で寝る = 방에서 자)',
+  },
+  {
+    particle: 'へ',
+    title: '"~으로" — へ',
+    desc: '"어디로 가는지" 가는 쪽을 말할 때 써요. 읽을 땐 [에]! に랑 거의 똑같이 쓸 수 있어요.',
+    examples: [
+      { sentence: '日本へ行きます。', translation: '일본에 갑니다.' },
+      { sentence: '駅へ向かう。', translation: '역으로 향한다.' },
+    ],
+    tip: 'へ도 읽기 조심! 조사일 땐 [헤]가 아니라 [에]로 읽어요.',
+  },
+  {
+    particle: 'で',
+    title: '"~에서, ~으로" — で',
+    desc: '"학교에서 공부해"처럼 어디서 하는지, "버스로 가", "젓가락으로 먹어"처럼 무엇으로 하는지 말할 때 써요.',
+    examples: [
+      { sentence: '図書館で勉強する。', translation: '도서관에서 공부한다.' },
+      { sentence: 'バスで学校に行く。', translation: '버스로 학교에 간다.' },
+      { sentence: '日本語で話す。', translation: '일본어로 이야기한다.' },
+    ],
+    tip: '뭔가 "하는" 곳은 で, "가는" 곳은 に! (公園で遊ぶ = 공원에서 놀아 ↔ 公園に行く = 공원에 가)',
+  },
+  {
+    particle: 'と',
+    title: '"~와/과" — と',
+    desc: '"엄마랑 같이", "빵이랑 우유"처럼 누구랑 같이 있거나 여러 개를 같이 말할 때 써요.',
+    examples: [
+      { sentence: '友達と映画を見る。', translation: '친구와 영화를 본다.' },
+      { sentence: 'パンと牛乳を買った。', translation: '빵과 우유를 샀다.' },
+    ],
+    tip: 'と는 "있는 거 다 말하기", や는 "몇 개만 골라서 말하기"!',
+  },
+  {
+    particle: 'も',
+    title: '"~도" — も',
+    desc: '"저도 좋아해", "이것도 줘"처럼 뒤에 "도"가 오면 も를 써요.',
+    examples: [
+      { sentence: '私も学生です。', translation: '저도 학생입니다.' },
+      { sentence: 'コーヒーも飲みます。', translation: '커피도 마십니다.' },
+    ],
+    tip: 'も를 쓸 땐 は나 を를 같이 쓰면 안 돼요! ❌ 私はも → ⭕ 私も',
+  },
+  {
+    particle: 'から / まで',
+    title: '"~부터 ~까지" — から / まで',
+    desc: 'から는 "어디서부터, 몇 시부터"처럼 시작을, まで는 "어디까지, 몇 시까지"처럼 끝을 말해요. 단짝처럼 같이 써요!',
+    examples: [
+      { sentence: '9時から5時まで働く。', translation: '9시부터 5시까지 일한다.' },
+      { sentence: '韓国から来ました。', translation: '한국에서 왔습니다.' },
+      { sentence: '高いから買わない。', translation: '비싸니까 안 산다.' },
+    ],
+    tip: 'から는 "왜 그런지" 말할 때도 써요! "비싸니까", "추우니까"처럼요.',
+  },
+  {
+    particle: 'の',
+    title: '"~의" — の',
+    desc: '두 낱말을 이어주는 말이에요. "엄마의 가방", "내 책"처럼 누구 거인지 말할 때 써요.',
+    examples: [
+      { sentence: '私の本です。', translation: '제 책입니다.' },
+      { sentence: '日本の歌が好きだ。', translation: '일본 노래를 좋아한다.' },
+      { sentence: '木の下で休む。', translation: '나무 아래에서 쉰다.' },
+    ],
+    tip: '한국어로 "의"가 빠져도 일본어에선 の를 꼭 써요! (예: 일본 노래 → 日本の歌)',
+  },
+  {
+    particle: 'や',
+    title: '"~(이)나" — や',
+    desc: '"사과나 귤(같은 거)"처럼 여러 개 중에 몇 개만 골라서 말할 때 써요. と는 다 말하기, や는 몇 개만!',
+    examples: [
+      { sentence: 'りんごやみかんを買った。', translation: '사과나 귤(같은 걸) 샀다.' },
+      { sentence: 'ペンやノートが必要だ。', translation: '펜이나 노트(같은 게) 필요하다.' },
+    ],
+    tip: '뒤에 「など」(이런 것들)를 붙이면 더 자연스러워요! (りんごやみかんなど = 사과나 귤 이런 것들)',
+  },
+  {
+    particle: 'より',
+    title: '"~보다" — より',
+    desc: '"여름은 겨울보다 더워"처럼 두 개를 비교할 때 써요. 우리말의 "~보다"랑 똑같아요!',
+    examples: [
+      { sentence: '夏は冬より暑い。', translation: '여름은 겨울보다 덥다.' },
+      { sentence: '彼は私より背が高い。', translation: '그는 나보다 키가 크다.' },
+      { sentence: '犬より猫の方が好きだ。', translation: '개보다 고양이가 더 좋아.' },
+    ],
+    tip: '비교하는 것 뒤에 より를 붙여요! "~の方が(~가 더)"랑 같이 쓰면 더 자연스러워요.',
+  },
+  {
+    particle: 'か / ね / よ',
+    title: '문장 끝에 붙는 말 — か, ね, よ',
+    desc: '문장 끝에 살짝 붙이면 말의 느낌이 바뀌어요. 한국어의 "~까?", "~지?", "~야!" 같은 거예요!',
+    examples: [
+      { sentence: '元気ですか。', translation: '잘 지내세요? (물어보기)' },
+      { sentence: '今日は寒いですね。', translation: '오늘은 춥네요. (맞장구)' },
+      { sentence: 'これ、おいしいですよ。', translation: '이거 맛있어요! (알려주기)' },
+    ],
+    tip: 'か = 물음표 "~까?", ね = "그치?" 하고 맞장구, よ = "있잖아~" 하고 알려주기!',
   },
 ];
 </script>
@@ -618,6 +778,57 @@ const naAdjRules = [
       </article>
     </section>
 
+    <!-- 기본 조사 -->
+    <section v-if="activeTab === 'particle'" class="content">
+      <div class="note">
+        <strong><span aria-hidden="true">🔍</span> 조사가 뭐예요?</strong>
+        <ul class="note-list">
+          <li>한국어의 "은/는/이/가/을/를" 같은 작은 도움말이에요.</li>
+          <li>낱말 뒤에 살짝 붙어서 <strong>"이 낱말이 무슨 일을 하는지"</strong>를 알려줘요.</li>
+          <li>조사를 알면 낱말 순서가 바뀌어도 무슨 말인지 이해할 수 있어요!</li>
+        </ul>
+        <p class="note-extra">
+          <span aria-hidden="true">💡</span> 읽기 조심! <code>は</code>는 [와], <code>を</code>는 [오], <code>へ</code>는 [에]로 읽어요.
+        </p>
+        <p class="warn">
+          <span aria-hidden="true">⚠️</span> 가장 많이 헷갈리는 짝꿍!
+          <br />• <code>は</code> vs <code>が</code> — 처음 나오는 게 누군지 말할 땐 が!
+          <br />• <code>に</code> vs <code>で</code> — "있는" 곳은 に, "하는" 곳은 で!
+          <br />• <code>と</code> vs <code>や</code> — 다 말하면 と, 몇 개만 말하면 や!
+        </p>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-title">한눈에 보기 — 기본 조사 16개</div>
+        <div class="summary-grid summary-grid-3">
+          <div class="summary-cell head">조사</div>
+          <div class="summary-cell head">의미</div>
+          <div class="summary-cell head">역할</div>
+          <template v-for="row in particleSummary" :key="row.particle">
+            <div class="summary-cell result">{{ row.particle }}</div>
+            <div class="summary-cell rule">{{ row.meaning }}</div>
+            <div class="summary-cell">{{ row.role }}</div>
+          </template>
+        </div>
+      </div>
+
+      <h2 class="section-head"><span aria-hidden="true">📝</span> 조사별 자세히 보기</h2>
+      <article v-for="rule in particleRules" :key="rule.particle" class="rule-card">
+        <h3 class="rule-title">{{ rule.title }}</h3>
+        <div class="rule-formula">{{ rule.particle }}</div>
+        <p class="rule-desc">{{ rule.desc }}</p>
+        <div class="examples">
+          <div v-for="(ex, i) in rule.examples" :key="i" class="particle-example-row">
+            <span class="particle-sentence">{{ ex.sentence }}</span>
+            <span class="particle-translation">{{ ex.translation }}</span>
+          </div>
+        </div>
+        <p class="particle-tip">
+          <span aria-hidden="true">💡</span> {{ rule.tip }}
+        </p>
+      </article>
+    </section>
+
     <button class="back-bottom-btn" @click="emit('back')">
       시험으로 돌아가기
     </button>
@@ -636,7 +847,7 @@ const naAdjRules = [
 <style scoped>
 .study-screen {
   --header-h: 3.25rem;
-  --tabs-h: 3.25rem;
+  --tabs-h: 6.5rem;
   --sticky-h: calc(var(--header-h) + var(--tabs-h));
   display: flex;
   flex-direction: column;
@@ -730,7 +941,7 @@ const naAdjRules = [
 
 .tabs {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.3rem;
   position: sticky;
   top: var(--header-h);
@@ -738,6 +949,9 @@ const naAdjRules = [
   z-index: 9;
   padding: 0.25rem 0;
   min-height: var(--tabs-h);
+}
+@media (min-width: 540px) {
+  .tabs { grid-template-columns: repeat(6, 1fr); }
 }
 .tab-btn {
   padding: 0.55rem 0.1rem;
@@ -1023,6 +1237,36 @@ const naAdjRules = [
   font-size: 0.82rem;
   color: #555;
   padding-left: 0.25rem;
+}
+
+.particle-example-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px dashed #e0e0e0;
+}
+.particle-example-row:last-child { border-bottom: none; }
+.particle-sentence {
+  font-size: 1rem;
+  color: #111;
+  font-family: 'Noto Sans JP', 'Hiragino Sans', serif;
+  line-height: 1.5;
+}
+.particle-translation {
+  font-size: 0.82rem;
+  color: #666;
+  line-height: 1.4;
+}
+.particle-tip {
+  margin: 0.3rem 0 0;
+  padding: 0.5rem 0.7rem;
+  background: #f3e5f5;
+  border-left: 3px solid #6a1b9a;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #4a148c;
+  line-height: 1.5;
 }
 
 .irreg-card { gap: 0.8rem; }

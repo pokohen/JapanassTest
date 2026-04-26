@@ -13,12 +13,19 @@ const emit = defineEmits<{
 const selectedReading = ref<string | null>(null);
 const selectedMeaning = ref<string | null>(null);
 const selectedConjugation = ref<string | null>(null);
+const selectedParticle = ref<string | null>(null);
 
 const conjugationLabel = computed(() =>
   props.question.type === 'conjugation'
     ? formLabel(props.question.item, props.question.form)
     : '',
 );
+
+const particleSentenceParts = computed(() => {
+  if (props.question.type !== 'particle') return null;
+  const [before = '', after = ''] = props.question.example.sentence.split('___');
+  return { before, after };
+});
 
 function baseRuby(item: ConjugationItem) {
   return rubyForItemForm(item, undefined, item.base);
@@ -37,6 +44,7 @@ watch(
     selectedReading.value = null;
     selectedMeaning.value = null;
     selectedConjugation.value = null;
+    selectedParticle.value = null;
     window.scrollTo({ top: 0 });
   },
 );
@@ -89,9 +97,13 @@ function submit() {
         meaning: selectedMeaning.value,
       });
     }
-  } else {
+  } else if (props.question.type === 'conjugation') {
     if (selectedConjugation.value) {
       emit('answer', { selected: selectedConjugation.value });
+    }
+  } else {
+    if (selectedParticle.value) {
+      emit('answer', { selected: selectedParticle.value });
     }
   }
 }
@@ -100,7 +112,10 @@ const canSubmit = computed(() => {
   if (props.question.type === 'word') {
     return !!selectedReading.value && !!selectedMeaning.value;
   }
-  return !!selectedConjugation.value;
+  if (props.question.type === 'conjugation') {
+    return !!selectedConjugation.value;
+  }
+  return !!selectedParticle.value;
 });
 </script>
 
@@ -160,6 +175,47 @@ const canSubmit = computed(() => {
           >
             <span class="choice-number">{{ i + 1 }}</span>
             {{ choice }}
+          </button>
+        </div>
+      </div>
+    </template>
+
+    <!-- 조사 문제 -->
+    <template v-else-if="question.type === 'particle'">
+      <div class="question-paper">
+        <div class="paper-header">
+          <span class="badge particle">助詞</span>
+          <span class="mondai-label">問題</span>
+        </div>
+
+        <div class="mondai-box context-box">
+          <p class="context-sentence">
+            <template v-if="particleSentenceParts">
+              {{ particleSentenceParts.before }}<span class="blank">___</span>{{ particleSentenceParts.after }}
+            </template>
+          </p>
+          <p class="context-translation">{{ question.example.translation }}</p>
+          <p class="conj-sub">
+            힌트: {{ question.item.name }} · {{ question.item.meaning }}
+          </p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">
+          <span class="section-number">?</span>
+          빈칸에 들어갈 <b>조사</b>는?
+        </h3>
+        <div class="choices">
+          <button
+            v-for="(choice, i) in question.choices"
+            :key="choice"
+            class="choice-btn"
+            :class="{ selected: selectedParticle === choice }"
+            @click="selectedParticle = choice"
+          >
+            <span class="choice-number">{{ i + 1 }}</span>
+            <span class="particle-choice">{{ choice }}</span>
           </button>
         </div>
       </div>
@@ -283,6 +339,12 @@ const canSubmit = computed(() => {
 .badge.new { background: #222; color: #fff; }
 .badge.review { background: #fff; color: #222; border: 1px solid #222; }
 .badge.conjugation { background: #1a237e; color: #fff; }
+.badge.particle { background: #6a1b9a; color: #fff; }
+.particle-choice {
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-family: 'Noto Sans JP', 'Hiragino Sans', serif;
+}
 .conj-sub {
   margin: 0.6rem 0 0;
   font-size: 0.9rem;

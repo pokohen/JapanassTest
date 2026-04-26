@@ -3,6 +3,7 @@ import type {
   QuizQuestion,
   WordQuestion,
   ConjugationQuestion,
+  ParticleQuestion,
   QuizResult,
   QuizState,
   QuestionResult,
@@ -10,6 +11,7 @@ import type {
   Word,
   ConjugationItem,
   ConjForm,
+  ParticleItem,
 } from "../types/word";
 import {
   getNewWords,
@@ -17,6 +19,7 @@ import {
   getLatestWeekNumber,
   getTotalWeekCount,
   getConjugationItems,
+  getParticleItems,
 } from "../data";
 import { pickRandom, shuffle } from "../utils/shuffle";
 import {
@@ -32,6 +35,7 @@ import { useTimer } from "./useTimer";
 
 const TOTAL_WORD_QUESTIONS = 50;
 const TOTAL_CONJUGATION_QUESTIONS = 8;
+const TOTAL_PARTICLE_QUESTIONS = 5;
 
 export function useQuiz() {
   const state = ref<QuizState>("IDLE");
@@ -89,7 +93,15 @@ export function useQuiz() {
       createConjugationQuestion(item),
     );
 
-    return [...wordQuestions, ...conjQuestions];
+    const particleItems = pickRandom(
+      getParticleItems(),
+      TOTAL_PARTICLE_QUESTIONS,
+    );
+    const particleQuestions: ParticleQuestion[] = particleItems.map((item) =>
+      createParticleQuestion(item, getParticleItems()),
+    );
+
+    return [...wordQuestions, ...conjQuestions, ...particleQuestions];
   }
 
   function createWordQuestion(
@@ -105,6 +117,27 @@ export function useQuiz() {
       selectedReading: null,
       selectedMeaning: null,
       isFromNewWords: isNew,
+    };
+  }
+
+  function createParticleQuestion(
+    item: ParticleItem,
+    pool: ParticleItem[],
+  ): ParticleQuestion {
+    const example =
+      item.examples[Math.floor(Math.random() * item.examples.length)];
+    const answer = item.particle;
+    const distractors = pool
+      .filter((p) => p.particle !== answer)
+      .map((p) => p.particle);
+    const choices = shuffle([answer, ...pickRandom(distractors, 3)]);
+    return {
+      type: "particle",
+      item,
+      example,
+      choices,
+      answer,
+      selected: null,
     };
   }
 
@@ -161,6 +194,8 @@ export function useQuiz() {
     if (q.type === "word") {
       q.selectedReading = payload.reading ?? null;
       q.selectedMeaning = payload.meaning ?? null;
+    } else if (q.type === "conjugation") {
+      q.selected = payload.selected ?? null;
     } else {
       q.selected = payload.selected ?? null;
     }
@@ -181,6 +216,8 @@ export function useQuiz() {
     let reviewTotal = 0;
     let conjCorrect = 0;
     let conjTotal = 0;
+    let particleCorrect = 0;
+    let particleTotal = 0;
     let wordQuestionCount = 0;
     const details: QuestionResult[] = [];
 
@@ -210,7 +247,7 @@ export function useQuiz() {
           selectedReading: q.selectedReading ?? "미응답",
           selectedMeaning: q.selectedMeaning ?? "미응답",
         });
-      } else {
+      } else if (q.type === "conjugation") {
         conjTotal++;
         const correct = q.selected === q.answer;
         if (correct) conjCorrect++;
@@ -223,6 +260,18 @@ export function useQuiz() {
           correct,
           context: q.context,
         });
+      } else {
+        particleTotal++;
+        const correct = q.selected === q.answer;
+        if (correct) particleCorrect++;
+        details.push({
+          type: "particle",
+          item: q.item,
+          example: q.example,
+          answer: q.answer,
+          selected: q.selected ?? "미응답",
+          correct,
+        });
       }
     }
 
@@ -233,6 +282,7 @@ export function useQuiz() {
       newWordScore: { correct: newCorrect, total: newTotal },
       reviewWordScore: { correct: reviewCorrect, total: reviewTotal },
       conjugationScore: { correct: conjCorrect, total: conjTotal },
+      particleScore: { correct: particleCorrect, total: particleTotal },
       timeElapsed: timer.getElapsedSeconds(),
       details,
     };
@@ -245,6 +295,8 @@ export function useQuiz() {
       if (q.type === "word") {
         q.selectedReading = "틀린답";
         q.selectedMeaning = "틀린답";
+      } else if (q.type === "conjugation") {
+        q.selected = "틀린답";
       } else {
         q.selected = "틀린답";
       }

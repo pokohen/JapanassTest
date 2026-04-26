@@ -1,9 +1,10 @@
-import type { Word, ConjugationItem } from "../types/word";
+import type { Word, ConjugationItem, ParticleItem } from "../types/word";
 import week1 from "./1week";
 import week2 from "./2week";
 import week3 from "./3week";
 import week4 from "./4week";
 import conjugationItems from "./conjugation";
+import particleItems from "./particles";
 // 새로운 주차를 추가할 때 아래에 import를 추가하세요
 
 const weekMap: Record<number, Word[]> = {
@@ -34,4 +35,8 @@ export function getTotalWeekCount(): number {
 
 export function getConjugationItems(): ConjugationItem[] {
   return conjugationItems;
+}
+
+export function getParticleItems(): ParticleItem[] {
+  return particleItems;
 }

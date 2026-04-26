@@ -23,10 +23,14 @@ const totalScore = computed(
   () =>
     props.result.correctReadings +
     props.result.correctMeanings +
-    props.result.conjugationScore.correct,
+    props.result.conjugationScore.correct +
+    props.result.particleScore.correct,
 );
 const totalPossible = computed(
-  () => props.result.totalQuestions * 2 + props.result.conjugationScore.total,
+  () =>
+    props.result.totalQuestions * 2 +
+    props.result.conjugationScore.total +
+    props.result.particleScore.total,
 );
 const percentage = computed(() => Math.round((totalScore.value / totalPossible.value) * 100));
 
@@ -84,6 +88,10 @@ function parseRuby(text: string): string {
         <span>활용</span>
         <span>{{ result.conjugationScore.correct }} / {{ result.conjugationScore.total }}</span>
       </div>
+      <div class="stat-row" v-if="result.particleScore.total > 0">
+        <span>조사</span>
+        <span>{{ result.particleScore.correct }} / {{ result.particleScore.total }}</span>
+      </div>
     </div>
 
     <h3 class="detail-title">상세 결과</h3>
@@ -103,6 +111,23 @@ function parseRuby(text: string): string {
             <div v-if="d.word.example_reading" class="example" v-html="'例: ' + parseRuby(d.word.example_reading)" />
             <div v-else-if="d.word.example" class="example">
               例: {{ d.word.example }}
+            </div>
+          </div>
+        </div>
+        <div v-else-if="d.type === 'particle'" class="detail-item">
+          <div class="detail-kanji particle">助詞</div>
+          <div class="detail-answers">
+            <div class="conj-base">
+              <span class="particle-answer">{{ d.answer }}</span>
+              <span class="conj-form">· {{ d.item.name }} · {{ d.item.meaning }}</span>
+            </div>
+            <div class="context-line">
+              예문: {{ d.example.sentence.split('___')[0] }}<span class="answer-inline">{{ d.answer }}</span>{{ d.example.sentence.split('___')[1] ?? '' }}
+            </div>
+            <div class="context-translation-inline">{{ d.example.translation }}</div>
+            <div :class="d.correct ? 'correct' : 'wrong'">
+              답: {{ d.selected }}
+              <span v-if="!d.correct" class="answer"> → {{ d.answer }}</span>
             </div>
           </div>
         </div>
@@ -219,6 +244,25 @@ function parseRuby(text: string): string {
   background: #1a237e;
   border-radius: 4px;
   padding: 0.3rem 0;
+}
+.detail-kanji.particle {
+  font-size: 0.85rem;
+  color: #fff;
+  background: #6a1b9a;
+  border-radius: 4px;
+  padding: 0.3rem 0;
+}
+.particle-answer {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #6a1b9a;
+  font-family: 'Noto Sans JP', 'Hiragino Sans', serif;
+}
+.context-translation-inline {
+  font-size: 0.82rem;
+  color: #666;
+  margin: 0.2rem 0 0.3rem;
+  padding: 0 0.55rem;
 }
 .conj-base {
   font-weight: 700;

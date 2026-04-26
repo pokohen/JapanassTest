@@ -48,7 +48,36 @@ export interface ConjugationQuestion {
   context?: ContextExample;
 }
 
-export type QuizQuestion = WordQuestion | ConjugationQuestion;
+export interface ParticleExample {
+  /** 빈칸 자리를 ___ 로 표시한 일본어 문장 */
+  sentence: string;
+  /** 한국어 번역 */
+  translation: string;
+}
+
+export interface ParticleItem {
+  /** 정답이 되는 조사 (예: 'は', 'を') */
+  particle: string;
+  /** 조사의 이름/역할 (예: '주제 조사') */
+  name: string;
+  /** 한국어 의미 (예: '~은/는') */
+  meaning: string;
+  /** 간단한 설명 */
+  description: string;
+  /** 빈칸 채우기 예문 */
+  examples: ParticleExample[];
+}
+
+export interface ParticleQuestion {
+  type: 'particle';
+  item: ParticleItem;
+  example: ParticleExample;
+  choices: string[];
+  answer: string;
+  selected: string | null;
+}
+
+export type QuizQuestion = WordQuestion | ConjugationQuestion | ParticleQuestion;
 
 export interface WordQuestionResult {
   type: 'word';
@@ -69,7 +98,19 @@ export interface ConjugationQuestionResult {
   context?: ContextExample;
 }
 
-export type QuestionResult = WordQuestionResult | ConjugationQuestionResult;
+export interface ParticleQuestionResult {
+  type: 'particle';
+  item: ParticleItem;
+  example: ParticleExample;
+  answer: string;
+  selected: string;
+  correct: boolean;
+}
+
+export type QuestionResult =
+  | WordQuestionResult
+  | ConjugationQuestionResult
+  | ParticleQuestionResult;
 
 export interface QuizResult {
   totalQuestions: number;
@@ -78,6 +119,7 @@ export interface QuizResult {
   newWordScore: { correct: number; total: number };
   reviewWordScore: { correct: number; total: number };
   conjugationScore: { correct: number; total: number };
+  particleScore: { correct: number; total: number };
   timeElapsed: number;
   details: QuestionResult[];
 }
