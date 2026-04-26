@@ -61,6 +61,20 @@ const words: Word[] = [
   { kanji: "用意", reading: "ようい", meaning: "준비", example: "旅行の用意をしています。", example_reading: "{旅行|りょこう}の{用意|ようい}をしています。" },
   { kanji: "来週", reading: "らいしゅう", meaning: "다음 주", example: "来週試験があります。", example_reading: "{来週|らいしゅう}{試験|しけん}があります。" },
   { kanji: "料理", reading: "りょうり", meaning: "요리", example: "母の料理はおいしいです。", example_reading: "{母|はは}の{料理|りょうり}はおいしいです。" },
+  { kanji: "林", reading: "はやし", meaning: "수풀, 숲", example: "林の中を散歩しました。", example_reading: "{林|はやし}の{中|なか}を{散歩|さんぽ}しました。" },
+  { kanji: "昼ご飯", reading: "ひるごはん", meaning: "점심밥", example: "昼ご飯はもう食べましたか。", example_reading: "{昼|ひる}ご{飯|はん}はもう{食|た}べましたか。" },
+  { kanji: "旅館", reading: "りょかん", meaning: "여관", example: "温泉の旅館に泊まりました。", example_reading: "{温泉|おんせん}の{旅館|りょかん}に{泊|と}まりました。" },
+  { kanji: "自動車", reading: "じどうしゃ", meaning: "자동차", example: "父は自動車の会社で働いています。", example_reading: "{父|ちち}は{自動車|じどうしゃ}の{会社|かいしゃ}で{働|はたら}いています。" },
+  { kanji: "調べる", reading: "しらべる", meaning: "조사하다, 찾아보다", example: "辞書で言葉を調べます。", example_reading: "{辞書|じしょ}で{言葉|ことば}を{調|しら}べます。" },
+  { kanji: "建てる", reading: "たてる", meaning: "(건물을) 짓다", example: "新しい家を建てました。", example_reading: "{新|あたら}しい{家|いえ}を{建|た}てました。" },
+  { kanji: "作る", reading: "つくる", meaning: "만들다", example: "母がケーキを作りました。", example_reading: "{母|はは}がケーキを{作|つく}りました。" },
+  { kanji: "閉じる", reading: "とじる", meaning: "닫다, 덮다", example: "本を閉じてください。", example_reading: "{本|ほん}を{閉|と}じてください。" },
+  { kanji: "朝", reading: "あさ", meaning: "아침", example: "朝はいつもパンを食べます。", example_reading: "{朝|あさ}はいつもパンを{食|た}べます。" },
+  { kanji: "兄", reading: "あに", meaning: "형, 오빠", example: "兄は会社員です。", example_reading: "{兄|あに}は{会社員|かいしゃいん}です。" },
+  { kanji: "以下", reading: "いか", meaning: "이하", example: "十才以下の子供は無料です。", example_reading: "{十才|じっさい}{以下|いか}の{子供|こども}は{無料|むりょう}です。" },
+  { kanji: "音", reading: "おと", meaning: "소리", example: "外から大きな音が聞こえます。", example_reading: "{外|そと}から{大|おお}きな{音|おと}が{聞|き}こえます。" },
+  { kanji: "帰国", reading: "きこく", meaning: "귀국", example: "来月日本へ帰国します。", example_reading: "{来月|らいげつ}{日本|にほん}へ{帰国|きこく}します。" },
+  { kanji: "交通", reading: "こうつう", meaning: "교통", example: "東京は交通が便利です。", example_reading: "{東京|とうきょう}は{交通|こうつう}が{便利|べんり}です。" },
 ];
 
 export default words;
