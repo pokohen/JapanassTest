@@ -14,6 +14,8 @@ const selectedReading = ref<string | null>(null);
 const selectedMeaning = ref<string | null>(null);
 const selectedConjugation = ref<string | null>(null);
 const selectedParticle = ref<string | null>(null);
+const selectedGrammar = ref<string | null>(null);
+const selectedDokkai = ref<string | null>(null);
 
 const conjugationLabel = computed(() =>
   props.question.type === 'conjugation'
@@ -23,6 +25,12 @@ const conjugationLabel = computed(() =>
 
 const particleSentenceParts = computed(() => {
   if (props.question.type !== 'particle') return null;
+  const [before = '', after = ''] = props.question.example.sentence.split('___');
+  return { before, after };
+});
+
+const grammarSentenceParts = computed(() => {
+  if (props.question.type !== 'grammar') return null;
   const [before = '', after = ''] = props.question.example.sentence.split('___');
   return { before, after };
 });
@@ -45,6 +53,8 @@ watch(
     selectedMeaning.value = null;
     selectedConjugation.value = null;
     selectedParticle.value = null;
+    selectedGrammar.value = null;
+    selectedDokkai.value = null;
     window.scrollTo({ top: 0 });
   },
 );
@@ -101,9 +111,17 @@ function submit() {
     if (selectedConjugation.value) {
       emit('answer', { selected: selectedConjugation.value });
     }
-  } else {
+  } else if (props.question.type === 'particle') {
     if (selectedParticle.value) {
       emit('answer', { selected: selectedParticle.value });
+    }
+  } else if (props.question.type === 'grammar') {
+    if (selectedGrammar.value) {
+      emit('answer', { selected: selectedGrammar.value });
+    }
+  } else {
+    if (selectedDokkai.value) {
+      emit('answer', { selected: selectedDokkai.value });
     }
   }
 }
@@ -115,7 +133,13 @@ const canSubmit = computed(() => {
   if (props.question.type === 'conjugation') {
     return !!selectedConjugation.value;
   }
-  return !!selectedParticle.value;
+  if (props.question.type === 'particle') {
+    return !!selectedParticle.value;
+  }
+  if (props.question.type === 'grammar') {
+    return !!selectedGrammar.value;
+  }
+  return !!selectedDokkai.value;
 });
 </script>
 
@@ -216,6 +240,83 @@ const canSubmit = computed(() => {
           >
             <span class="choice-number">{{ i + 1 }}</span>
             <span class="particle-choice">{{ choice }}</span>
+          </button>
+        </div>
+      </div>
+    </template>
+
+    <!-- 문법(N4) 문제 -->
+    <template v-else-if="question.type === 'grammar'">
+      <div class="question-paper">
+        <div class="paper-header">
+          <span class="badge grammar">文法</span>
+          <span class="mondai-label">問題</span>
+        </div>
+
+        <div class="mondai-box context-box">
+          <p class="context-sentence">
+            <template v-if="grammarSentenceParts">
+              {{ grammarSentenceParts.before }}<span class="blank">___</span>{{ grammarSentenceParts.after }}
+            </template>
+          </p>
+          <p class="context-translation">{{ question.example.translation }}</p>
+          <p class="conj-sub">
+            힌트: <b>{{ question.item.pattern }}</b> · {{ question.item.name }}
+          </p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">
+          <span class="section-number">?</span>
+          빈칸에 들어갈 <b>문법 표현</b>은?
+        </h3>
+        <div class="choices">
+          <button
+            v-for="(choice, i) in question.choices"
+            :key="choice"
+            class="choice-btn"
+            :class="{ selected: selectedGrammar === choice }"
+            @click="selectedGrammar = choice"
+          >
+            <span class="choice-number">{{ i + 1 }}</span>
+            <span class="grammar-choice">{{ choice }}</span>
+          </button>
+        </div>
+      </div>
+    </template>
+
+    <!-- 독해(N4) 문제 -->
+    <template v-else-if="question.type === 'reading'">
+      <div class="question-paper">
+        <div class="paper-header">
+          <span class="badge reading">読解</span>
+          <span class="mondai-label">
+            問題 ({{ question.indexInGroup }}/{{ question.totalInGroup }})
+          </span>
+        </div>
+
+        <div class="passage-box">
+          <div class="passage-title">{{ question.passage.title }}</div>
+          <p class="passage-text">{{ question.passage.passage }}</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">
+          <span class="section-number">?</span>
+          {{ question.sub.question }}
+        </h3>
+        <div class="choices choices-single">
+          <button
+            v-for="(choice, i) in question.sub.choices"
+            :key="choice"
+            class="choice-btn"
+            :class="{ selected: selectedDokkai === choice }"
+            @click="selectedDokkai = choice"
+          >
+            <span class="choice-number">{{ i + 1 }}</span>
+            <span class="reading-choice">{{ choice }}</span>
           </button>
         </div>
       </div>
@@ -340,10 +441,56 @@ const canSubmit = computed(() => {
 .badge.review { background: #fff; color: #222; border: 1px solid #222; }
 .badge.conjugation { background: #1a237e; color: #fff; }
 .badge.particle { background: #6a1b9a; color: #fff; }
+.badge.grammar { background: #00695c; color: #fff; }
+.badge.reading { background: #c62828; color: #fff; }
 .particle-choice {
   font-size: 1.4rem;
   font-weight: 700;
   font-family: 'Noto Sans JP', 'Hiragino Sans', serif;
+}
+.grammar-choice {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-family: 'Noto Sans JP', 'Hiragino Sans', serif;
+  color: #00695c;
+}
+.reading-choice {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #222;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.passage-box {
+  text-align: left;
+  padding: 0.5rem;
+  background: #fffaf3;
+  border: 1px solid #f0d9b5;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+.passage-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #6d3c00;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px dashed #e0c099;
+  margin-bottom: 0.5rem;
+}
+.passage-text {
+  margin: 0;
+  padding: 0.4rem 0.6rem;
+  font-size: 1rem;
+  font-family: 'Noto Sans JP', 'Hiragino Sans', serif;
+  line-height: 1.95;
+  color: #1a1a1a;
+  white-space: pre-line;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+@media (max-width: 400px) {
+  .passage-text { font-size: 0.95rem; line-height: 1.85; }
 }
 .conj-sub {
   margin: 0.6rem 0 0;

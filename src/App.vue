@@ -24,6 +24,9 @@ const {
   answerQuestion,
   devSkipToResult,
   devStartConjugationOnly,
+  devStartGrammarOnly,
+  devStartParticleOnly,
+  devStartReadingOnly,
   resetQuiz,
 } = useQuiz();
 </script>
@@ -44,7 +47,16 @@ const {
           DEV: 결과 바로가기
         </button>
         <button class="dev-btn alt" @click="devStartConjugationOnly()">
-          DEV: 문법 퀴즈 바로가기
+          DEV: 활용 퀴즈 바로가기
+        </button>
+        <button class="dev-btn particle" @click="devStartParticleOnly()">
+          DEV: 조사 퀴즈 바로가기
+        </button>
+        <button class="dev-btn n4" @click="devStartGrammarOnly()">
+          DEV: N4 문법 바로가기
+        </button>
+        <button class="dev-btn dokkai" @click="devStartReadingOnly()">
+          DEV: N4 독해 바로가기
         </button>
       </div>
     </template>
@@ -110,5 +122,8 @@ const {
   opacity: 0.7;
 }
 .dev-btn.alt { background: #1a237e; }
+.dev-btn.particle { background: #6a1b9a; }
+.dev-btn.n4 { background: #00695c; }
+.dev-btn.dokkai { background: #c62828; }
 .dev-btn:hover { opacity: 1; }
 </style>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import grammarItems from '../data/grammar';
 
-type Tab = 'godan' | 'ichidan' | 'irregular' | 'iadj' | 'naadj' | 'particle';
+type Tab = 'godan' | 'ichidan' | 'irregular' | 'iadj' | 'naadj' | 'particle' | 'n4';
 
 const emit = defineEmits<{ back: [] }>();
 const activeTab = ref<Tab>('godan');
@@ -59,6 +60,7 @@ const tabs: { key: Tab; label: string; desc: string }[] = [
   { key: 'iadj', label: 'い형용사', desc: '끝이 い로 끝나는 꾸밈말이에요' },
   { key: 'naadj', label: 'な형용사', desc: '명사를 꾸밀 때 な를 붙이는 꾸밈말이에요' },
   { key: 'particle', label: '기본 조사', desc: '낱말 뒤에 붙는 작은 글자들! "은/는/이/가" 같은 거예요' },
+  { key: 'n4', label: 'N4 문법', desc: 'JLPT N4 핵심 문법 패턴! 조건·추측·의무·허가 등을 익혀요' },
 ];
 
 const godanRules = [
@@ -829,6 +831,36 @@ const particleRules = [
       </article>
     </section>
 
+    <!-- N4 문법 -->
+    <section v-if="activeTab === 'n4'" class="content">
+      <div class="note">
+        <strong><span aria-hidden="true">🎯</span> N4 문법은 어떤 거예요?</strong>
+        <ul class="note-list">
+          <li>JLPT N4 단계에서 자주 나오는 문법 패턴들이에요. 동사·형용사 활용을 한 단계 더 응용해요.</li>
+          <li>조건(<code>～たら</code>, <code>～ば</code>), 추측(<code>～かもしれない</code>), 의무(<code>～なければならない</code>), 허가(<code>～てもいい</code>) 등이 핵심이에요.</li>
+          <li>각 패턴은 <strong>"앞에 무엇이 오는지"</strong>가 정해져 있어요. 활용형을 먼저 익히면 훨씬 쉬워요!</li>
+        </ul>
+        <p class="note-extra">
+          <span aria-hidden="true">💡</span> N4 문법은 빈칸 채우기로 외우면 좋아요. 예문을 많이 보면서 자연스러운 형태를 익혀요.
+        </p>
+      </div>
+
+      <h2 class="section-head"><span aria-hidden="true">📝</span> 패턴별 자세히 보기</h2>
+      <article v-for="g in grammarItems" :key="g.pattern" class="rule-card">
+        <h3 class="rule-title">{{ g.pattern }}</h3>
+        <div class="rule-formula">{{ g.name }} · {{ g.meaning }}</div>
+        <p class="rule-desc">{{ g.description }}</p>
+        <div class="examples">
+          <div v-for="(ex, i) in g.examples" :key="i" class="particle-example-row">
+            <span class="particle-sentence">
+              {{ ex.sentence.split('___')[0] }}<b class="grammar-answer-inline">{{ ex.answer }}</b>{{ ex.sentence.split('___')[1] ?? '' }}
+            </span>
+            <span class="particle-translation">{{ ex.translation }}</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
     <button class="back-bottom-btn" @click="emit('back')">
       시험으로 돌아가기
     </button>
@@ -941,7 +973,7 @@ const particleRules = [
 
 .tabs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.3rem;
   position: sticky;
   top: var(--header-h);
@@ -951,7 +983,7 @@ const particleRules = [
   min-height: var(--tabs-h);
 }
 @media (min-width: 540px) {
-  .tabs { grid-template-columns: repeat(6, 1fr); }
+  .tabs { grid-template-columns: repeat(7, 1fr); }
 }
 .tab-btn {
   padding: 0.55rem 0.1rem;
@@ -1267,6 +1299,12 @@ const particleRules = [
   font-size: 0.85rem;
   color: #4a148c;
   line-height: 1.5;
+}
+.grammar-answer-inline {
+  color: #00695c;
+  font-weight: 700;
+  border-bottom: 2px solid #00695c;
+  padding: 0 0.1rem;
 }
 
 .irreg-card { gap: 0.8rem; }

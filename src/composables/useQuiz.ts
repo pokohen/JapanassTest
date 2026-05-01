@@ -4,6 +4,8 @@ import type {
   WordQuestion,
   ConjugationQuestion,
   ParticleQuestion,
+  GrammarQuestion,
+  ReadingQuestion,
   QuizResult,
   QuizState,
   QuestionResult,
@@ -12,6 +14,8 @@ import type {
   ConjugationItem,
   ConjForm,
   ParticleItem,
+  GrammarItem,
+  ReadingPassage,
 } from "../types/word";
 import {
   getNewWords,
@@ -20,6 +24,8 @@ import {
   getTotalWeekCount,
   getConjugationItems,
   getParticleItems,
+  getGrammarItems,
+  getReadingPassages,
 } from "../data";
 import { pickRandom, shuffle } from "../utils/shuffle";
 import {
@@ -36,6 +42,9 @@ import { useTimer } from "./useTimer";
 const TOTAL_WORD_QUESTIONS = 50;
 const TOTAL_CONJUGATION_QUESTIONS = 8;
 const TOTAL_PARTICLE_QUESTIONS = 5;
+const TOTAL_GRAMMAR_QUESTIONS = 5;
+const READING_PASSAGES_PER_QUIZ = 1;
+const READING_QUESTIONS_PER_PASSAGE = 2;
 
 export function useQuiz() {
   const state = ref<QuizState>("IDLE");
@@ -101,7 +110,29 @@ export function useQuiz() {
       createParticleQuestion(item, getParticleItems()),
     );
 
-    return [...wordQuestions, ...conjQuestions, ...particleQuestions];
+    const grammarItems = pickRandom(
+      getGrammarItems(),
+      TOTAL_GRAMMAR_QUESTIONS,
+    );
+    const grammarQuestions: GrammarQuestion[] = grammarItems.map((item) =>
+      createGrammarQuestion(item, getGrammarItems()),
+    );
+
+    const selectedPassages = pickRandom(
+      getReadingPassages(),
+      READING_PASSAGES_PER_QUIZ,
+    );
+    const readingQuestions: ReadingQuestion[] = selectedPassages.flatMap(
+      (passage) => createReadingQuestions(passage, READING_QUESTIONS_PER_PASSAGE),
+    );
+
+    return [
+      ...wordQuestions,
+      ...conjQuestions,
+      ...particleQuestions,
+      ...grammarQuestions,
+      ...readingQuestions,
+    ];
   }
 
   function createWordQuestion(
@@ -133,6 +164,50 @@ export function useQuiz() {
     const choices = shuffle([answer, ...pickRandom(distractors, 3)]);
     return {
       type: "particle",
+      item,
+      example,
+      choices,
+      answer,
+      selected: null,
+    };
+  }
+
+  function createReadingQuestions(
+    passage: ReadingPassage,
+    count: number,
+  ): ReadingQuestion[] {
+    const subs = pickRandom(passage.questions, count);
+    const total = subs.length;
+    return subs.map((sub, idx) => ({
+      type: "reading",
+      passage,
+      sub: { ...sub, choices: shuffle([...sub.choices]) },
+      groupId: passage.id,
+      indexInGroup: idx + 1,
+      totalInGroup: total,
+      selected: null,
+    }));
+  }
+
+  function createGrammarQuestion(
+    item: GrammarItem,
+    pool: GrammarItem[],
+  ): GrammarQuestion {
+    const example =
+      item.examples[Math.floor(Math.random() * item.examples.length)];
+    const answer = example.answer;
+
+    const distractorPool = new Set<string>();
+    for (const g of pool) {
+      for (const ex of g.examples) {
+        if (ex.answer !== answer) distractorPool.add(ex.answer);
+      }
+    }
+    const distractors = pickRandom(Array.from(distractorPool), 3);
+    const choices = shuffle([answer, ...distractors]);
+
+    return {
+      type: "grammar",
       item,
       example,
       choices,
@@ -196,6 +271,10 @@ export function useQuiz() {
       q.selectedMeaning = payload.meaning ?? null;
     } else if (q.type === "conjugation") {
       q.selected = payload.selected ?? null;
+    } else if (q.type === "particle") {
+      q.selected = payload.selected ?? null;
+    } else if (q.type === "grammar") {
+      q.selected = payload.selected ?? null;
     } else {
       q.selected = payload.selected ?? null;
     }
@@ -218,6 +297,10 @@ export function useQuiz() {
     let conjTotal = 0;
     let particleCorrect = 0;
     let particleTotal = 0;
+    let grammarCorrect = 0;
+    let grammarTotal = 0;
+    let readingCorrect = 0;
+    let readingTotal = 0;
     let wordQuestionCount = 0;
     const details: QuestionResult[] = [];
 
@@ -260,7 +343,7 @@ export function useQuiz() {
           correct,
           context: q.context,
         });
-      } else {
+      } else if (q.type === "particle") {
         particleTotal++;
         const correct = q.selected === q.answer;
         if (correct) particleCorrect++;
@@ -271,6 +354,33 @@ export function useQuiz() {
           answer: q.answer,
           selected: q.selected ?? "미응답",
           correct,
+        });
+      } else if (q.type === "grammar") {
+        grammarTotal++;
+        const correct = q.selected === q.answer;
+        if (correct) grammarCorrect++;
+        details.push({
+          type: "grammar",
+          item: q.item,
+          example: q.example,
+          answer: q.answer,
+          selected: q.selected ?? "미응답",
+          correct,
+        });
+      } else {
+        readingTotal++;
+        const correct = q.selected === q.sub.answer;
+        if (correct) readingCorrect++;
+        details.push({
+          type: "reading",
+          passage: q.passage,
+          sub: q.sub,
+          answer: q.sub.answer,
+          selected: q.selected ?? "미응답",
+          correct,
+          groupId: q.groupId,
+          indexInGroup: q.indexInGroup,
+          totalInGroup: q.totalInGroup,
         });
       }
     }
@@ -283,6 +393,8 @@ export function useQuiz() {
       reviewWordScore: { correct: reviewCorrect, total: reviewTotal },
       conjugationScore: { correct: conjCorrect, total: conjTotal },
       particleScore: { correct: particleCorrect, total: particleTotal },
+      grammarScore: { correct: grammarCorrect, total: grammarTotal },
+      readingScore: { correct: readingCorrect, total: readingTotal },
       timeElapsed: timer.getElapsedSeconds(),
       details,
     };
@@ -297,12 +409,58 @@ export function useQuiz() {
         q.selectedMeaning = "틀린답";
       } else if (q.type === "conjugation") {
         q.selected = "틀린답";
+      } else if (q.type === "particle") {
+        q.selected = "틀린답";
+      } else if (q.type === "grammar") {
+        q.selected = "틀린답";
       } else {
         q.selected = "틀린답";
       }
     }
     state.value = "FINISHED";
     result.value = calculateResult();
+  }
+
+  function devStartReadingOnly(passages = 1) {
+    mode.value = "exam";
+    const selected = pickRandom(getReadingPassages(), passages);
+    const readingQuestions: ReadingQuestion[] = selected.flatMap((p) =>
+      createReadingQuestions(p, READING_QUESTIONS_PER_PASSAGE),
+    );
+    questions.value = readingQuestions;
+    currentIndex.value = 0;
+    result.value = null;
+    state.value = "IN_PROGRESS";
+    timer.reset();
+    timer.start();
+  }
+
+  function devStartGrammarOnly(count = 10) {
+    mode.value = "exam";
+    const items = pickRandom(getGrammarItems(), count);
+    const grammarQuestions: GrammarQuestion[] = items.map((item) =>
+      createGrammarQuestion(item, getGrammarItems()),
+    );
+    questions.value = grammarQuestions;
+    currentIndex.value = 0;
+    result.value = null;
+    state.value = "IN_PROGRESS";
+    timer.reset();
+    timer.start();
+  }
+
+  function devStartParticleOnly(count = 10) {
+    mode.value = "exam";
+    const items = pickRandom(getParticleItems(), count);
+    const particleQuestions: ParticleQuestion[] = items.map((item) =>
+      createParticleQuestion(item, getParticleItems()),
+    );
+    questions.value = particleQuestions;
+    currentIndex.value = 0;
+    result.value = null;
+    state.value = "IN_PROGRESS";
+    timer.reset();
+    timer.start();
   }
 
   function devStartConjugationOnly(count = 10) {
@@ -342,6 +500,9 @@ export function useQuiz() {
     answerQuestion,
     devSkipToResult,
     devStartConjugationOnly,
+    devStartGrammarOnly,
+    devStartParticleOnly,
+    devStartReadingOnly,
     resetQuiz,
   };
 }
