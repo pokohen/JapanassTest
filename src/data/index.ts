@@ -9,6 +9,8 @@ import week1 from "./1week";
 import week2 from "./2week";
 import week3 from "./3week";
 import week4 from "./4week";
+import week5 from "./5week";
+import week6 from "./6week";
 import conjugationItems from "./conjugation";
 import particleItems from "./particles";
 import grammarItems from "./grammar";
@@ -20,6 +22,8 @@ const weekMap: Record<number, Word[]> = {
   2: week2,
   3: week3,
   4: week4,
+  5: week5,
+  6: week6,
 };
 
 export function getLatestWeekNumber(): number {

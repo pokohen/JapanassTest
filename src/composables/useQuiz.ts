@@ -39,7 +39,7 @@ import {
 } from "../utils/conjugation";
 import { useTimer } from "./useTimer";
 
-const TOTAL_WORD_QUESTIONS = 50;
+const TOTAL_WORD_QUESTIONS = 80;
 const TOTAL_CONJUGATION_QUESTIONS = 8;
 const TOTAL_PARTICLE_QUESTIONS = 5;
 const TOTAL_GRAMMAR_QUESTIONS = 5;
@@ -80,11 +80,11 @@ export function useQuiz() {
       selectedNew = pickRandom(newWords, TOTAL_WORD_QUESTIONS);
       selectedReview = [];
     } else if (mode.value === "exam") {
-      selectedNew = pickRandom(newWords, 25);
-      selectedReview = pickRandom(reviewWords, 25);
-    } else {
+      selectedNew = pickRandom(newWords, 40);
       selectedReview = pickRandom(reviewWords, 40);
-      selectedNew = pickRandom(newWords, 10);
+    } else {
+      selectedReview = pickRandom(reviewWords, 60);
+      selectedNew = pickRandom(newWords, 20);
     }
 
     const pool = allWords.length > 0 ? allWords : newWords;
