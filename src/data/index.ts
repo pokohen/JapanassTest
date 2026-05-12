@@ -31,14 +31,33 @@ export function getLatestWeekNumber(): number {
 }
 
 export function getNewWords(): Word[] {
-  return weekMap[getLatestWeekNumber()] ?? [];
+  const words = weekMap[getLatestWeekNumber()] ?? [];
+  const seen = new Set<string>();
+  return words.filter((w) => {
+    const key = `${w.kanji}|${w.reading}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 export function getReviewWords(): Word[] {
   const latest = getLatestWeekNumber();
-  return Object.entries(weekMap)
-    .filter(([weekNum]) => Number(weekNum) < latest)
-    .flatMap(([, words]) => words);
+  const newWordKeys = new Set(
+    (weekMap[latest] ?? []).map((w) => `${w.kanji}|${w.reading}`),
+  );
+  const seen = new Set<string>();
+  const result: Word[] = [];
+  for (const [weekNum, words] of Object.entries(weekMap)) {
+    if (Number(weekNum) >= latest) continue;
+    for (const w of words) {
+      const key = `${w.kanji}|${w.reading}`;
+      if (newWordKeys.has(key) || seen.has(key)) continue;
+      seen.add(key);
+      result.push(w);
+    }
+  }
+  return result;
 }
 
 export function getTotalWeekCount(): number {

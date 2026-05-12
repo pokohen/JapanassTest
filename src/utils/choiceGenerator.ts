@@ -6,8 +6,13 @@ export function generateReadingChoices(
   allWords: Word[],
   choiceCount = 4,
 ): string[] {
+  const sameKanjiReadings = new Set(
+    allWords
+      .filter((w) => w.kanji === correctWord.kanji)
+      .map((w) => w.reading),
+  );
   const others = allWords
-    .filter((w) => w.reading !== correctWord.reading)
+    .filter((w) => !sameKanjiReadings.has(w.reading))
     .map((w) => w.reading);
   const uniqueOthers = [...new Set(others)];
   const wrongChoices = shuffle(uniqueOthers).slice(0, choiceCount - 1);
@@ -19,8 +24,13 @@ export function generateMeaningChoices(
   allWords: Word[],
   choiceCount = 4,
 ): string[] {
+  const sameKanjiMeanings = new Set(
+    allWords
+      .filter((w) => w.kanji === correctWord.kanji)
+      .map((w) => w.meaning),
+  );
   const others = allWords
-    .filter((w) => w.meaning !== correctWord.meaning)
+    .filter((w) => !sameKanjiMeanings.has(w.meaning))
     .map((w) => w.meaning);
   const uniqueOthers = [...new Set(others)];
   const wrongChoices = shuffle(uniqueOthers).slice(0, choiceCount - 1);
