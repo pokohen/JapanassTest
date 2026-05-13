@@ -9,7 +9,6 @@ import type {
   QuizResult,
   QuizState,
   QuestionResult,
-  QuizMode,
   Word,
   ConjugationItem,
   ConjForm,
@@ -18,10 +17,8 @@ import type {
   ReadingPassage,
 } from "../types/word";
 import {
-  getNewWords,
-  getReviewWords,
-  getLatestWeekNumber,
-  getTotalWeekCount,
+  getWords,
+  getTotalWordCount,
   getConjugationItems,
   getParticleItems,
   getGrammarItems,
@@ -48,7 +45,6 @@ const READING_QUESTIONS_PER_PASSAGE = 2;
 
 export function useQuiz() {
   const state = ref<QuizState>("IDLE");
-  const mode = ref<QuizMode>("exam");
   const questions = ref<QuizQuestion[]>([]);
   const currentIndex = ref(0);
   const result = ref<QuizResult | null>(null);
@@ -56,8 +52,7 @@ export function useQuiz() {
   const currentQuestion = computed(
     () => questions.value[currentIndex.value] ?? null,
   );
-  const latestWeek = computed(() => getLatestWeekNumber());
-  const totalWeeks = computed(() => getTotalWeekCount());
+  const totalWordCount = computed(() => getTotalWordCount());
 
   function finishQuiz() {
     if (state.value !== "IN_PROGRESS") return;
@@ -69,30 +64,12 @@ export function useQuiz() {
   const timer = useTimer(finishQuiz);
 
   function buildQuestions(): QuizQuestion[] {
-    const newWords = getNewWords();
-    const reviewWords = getReviewWords();
-    const allWords = [...newWords, ...reviewWords];
+    const allWords = getWords();
+    const selectedWords = pickRandom(allWords, TOTAL_WORD_QUESTIONS);
 
-    let selectedNew: Word[];
-    let selectedReview: Word[];
-
-    if (reviewWords.length === 0) {
-      selectedNew = pickRandom(newWords, TOTAL_WORD_QUESTIONS);
-      selectedReview = [];
-    } else if (mode.value === "exam") {
-      selectedNew = pickRandom(newWords, 40);
-      selectedReview = pickRandom(reviewWords, 40);
-    } else {
-      selectedReview = pickRandom(reviewWords, 60);
-      selectedNew = pickRandom(newWords, 20);
-    }
-
-    const pool = allWords.length > 0 ? allWords : newWords;
-
-    const wordQuestions: WordQuestion[] = shuffle([
-      ...selectedNew.map((word) => createWordQuestion(word, pool, true)),
-      ...selectedReview.map((word) => createWordQuestion(word, pool, false)),
-    ]);
+    const wordQuestions: WordQuestion[] = shuffle(
+      selectedWords.map((word) => createWordQuestion(word, allWords)),
+    );
 
     const conjItems = pickRandom(
       getConjugationItems(),
@@ -135,11 +112,7 @@ export function useQuiz() {
     ];
   }
 
-  function createWordQuestion(
-    word: Word,
-    pool: Word[],
-    isNew: boolean,
-  ): WordQuestion {
+  function createWordQuestion(word: Word, pool: Word[]): WordQuestion {
     return {
       type: "word",
       word,
@@ -147,7 +120,6 @@ export function useQuiz() {
       meaningChoices: generateMeaningChoices(word, pool),
       selectedReading: null,
       selectedMeaning: null,
-      isFromNewWords: isNew,
     };
   }
 
@@ -249,8 +221,7 @@ export function useQuiz() {
     };
   }
 
-  function startQuiz(selectedMode: QuizMode) {
-    mode.value = selectedMode;
+  function startQuiz() {
     questions.value = buildQuestions();
     currentIndex.value = 0;
     result.value = null;
@@ -289,10 +260,8 @@ export function useQuiz() {
   function calculateResult(): QuizResult {
     let correctReadings = 0;
     let correctMeanings = 0;
-    let newCorrect = 0;
-    let newTotal = 0;
-    let reviewCorrect = 0;
-    let reviewTotal = 0;
+    let wordCorrect = 0;
+    let wordTotal = 0;
     let conjCorrect = 0;
     let conjTotal = 0;
     let particleCorrect = 0;
@@ -314,13 +283,8 @@ export function useQuiz() {
         if (meaningCorrect) correctMeanings++;
 
         const score = (readingCorrect ? 1 : 0) + (meaningCorrect ? 1 : 0);
-        if (q.isFromNewWords) {
-          newTotal += 2;
-          newCorrect += score;
-        } else {
-          reviewTotal += 2;
-          reviewCorrect += score;
-        }
+        wordTotal += 2;
+        wordCorrect += score;
 
         details.push({
           type: "word",
@@ -389,8 +353,7 @@ export function useQuiz() {
       totalQuestions: wordQuestionCount,
       correctReadings,
       correctMeanings,
-      newWordScore: { correct: newCorrect, total: newTotal },
-      reviewWordScore: { correct: reviewCorrect, total: reviewTotal },
+      wordScore: { correct: wordCorrect, total: wordTotal },
       conjugationScore: { correct: conjCorrect, total: conjTotal },
       particleScore: { correct: particleCorrect, total: particleTotal },
       grammarScore: { correct: grammarCorrect, total: grammarTotal },
@@ -401,7 +364,6 @@ export function useQuiz() {
   }
 
   function devSkipToResult() {
-    mode.value = "exam";
     questions.value = buildQuestions();
     for (const q of questions.value) {
       if (q.type === "word") {
@@ -422,7 +384,6 @@ export function useQuiz() {
   }
 
   function devStartReadingOnly(passages = 1) {
-    mode.value = "exam";
     const selected = pickRandom(getReadingPassages(), passages);
     const readingQuestions: ReadingQuestion[] = selected.flatMap((p) =>
       createReadingQuestions(p, READING_QUESTIONS_PER_PASSAGE),
@@ -436,7 +397,6 @@ export function useQuiz() {
   }
 
   function devStartGrammarOnly(count = 10) {
-    mode.value = "exam";
     const items = pickRandom(getGrammarItems(), count);
     const grammarQuestions: GrammarQuestion[] = items.map((item) =>
       createGrammarQuestion(item, getGrammarItems()),
@@ -450,7 +410,6 @@ export function useQuiz() {
   }
 
   function devStartParticleOnly(count = 10) {
-    mode.value = "exam";
     const items = pickRandom(getParticleItems(), count);
     const particleQuestions: ParticleQuestion[] = items.map((item) =>
       createParticleQuestion(item, getParticleItems()),
@@ -464,7 +423,6 @@ export function useQuiz() {
   }
 
   function devStartConjugationOnly(count = 10) {
-    mode.value = "exam";
     const conjItems = pickRandom(getConjugationItems(), count);
     const conjQuestions: ConjugationQuestion[] = conjItems.map((item) =>
       createConjugationQuestion(item),
@@ -479,7 +437,6 @@ export function useQuiz() {
 
   function resetQuiz() {
     state.value = "IDLE";
-    mode.value = "exam";
     questions.value = [];
     currentIndex.value = 0;
     result.value = null;
@@ -488,13 +445,11 @@ export function useQuiz() {
 
   return {
     state,
-    mode,
     questions,
     currentIndex,
     currentQuestion,
     result,
-    latestWeek,
-    totalWeeks,
+    totalWordCount,
     remainingSeconds: timer.remainingSeconds,
     startQuiz,
     answerQuestion,

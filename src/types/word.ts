@@ -34,7 +34,6 @@ export interface WordQuestion {
   meaningChoices: string[];
   selectedReading: string | null;
   selectedMeaning: string | null;
-  isFromNewWords: boolean;
 }
 
 export interface ConjugationQuestion {
@@ -212,8 +211,7 @@ export interface QuizResult {
   totalQuestions: number;
   correctReadings: number;
   correctMeanings: number;
-  newWordScore: { correct: number; total: number };
-  reviewWordScore: { correct: number; total: number };
+  wordScore: { correct: number; total: number };
   conjugationScore: { correct: number; total: number };
   particleScore: { correct: number; total: number };
   grammarScore: { correct: number; total: number };
@@ -223,4 +221,3 @@ export interface QuizResult {
 }
 
 export type QuizState = 'IDLE' | 'IN_PROGRESS' | 'FINISHED';
-export type QuizMode = 'exam' | 'review';

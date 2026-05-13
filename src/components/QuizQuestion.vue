@@ -149,9 +149,6 @@ const canSubmit = computed(() => {
     <template v-if="question.type === 'word'">
       <div class="question-paper">
         <div class="paper-header">
-          <span class="badge" :class="question.isFromNewWords ? 'new' : 'review'">
-            {{ question.isFromNewWords ? '新出' : '復習' }}
-          </span>
           <span class="mondai-label">問題</span>
         </div>
 
@@ -437,8 +434,6 @@ const canSubmit = computed(() => {
   font-weight: 700;
   letter-spacing: 0.05em;
 }
-.badge.new { background: #222; color: #fff; }
-.badge.review { background: #fff; color: #222; border: 1px solid #222; }
 .badge.conjugation { background: #1a237e; color: #fff; }
 .badge.particle { background: #6a1b9a; color: #fff; }
 .badge.grammar { background: #00695c; color: #fff; }

@@ -17,8 +17,7 @@ const {
   currentIndex,
   currentQuestion,
   result,
-  latestWeek,
-  totalWeeks,
+  totalWordCount,
   remainingSeconds,
   startQuiz,
   answerQuestion,
@@ -37,8 +36,7 @@ const {
 
     <template v-else-if="state === 'IDLE'">
       <QuizStart
-        :latest-week="latestWeek"
-        :total-weeks="totalWeeks"
+        :total-word-count="totalWordCount"
         @start="startQuiz"
         @study="showStudy = true"
       />

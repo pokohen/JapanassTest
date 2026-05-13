@@ -102,7 +102,7 @@ function togglePassage(groupId: string) {
 
 <template>
   <div class="results">
-    <h2 class="title">시험 결과</h2>
+    <h2 class="title">문제 풀이 결과</h2>
 
     <div class="score-circle" :style="{ borderColor: grade.color }">
       <div class="score-number" :style="{ color: grade.color }">{{ percentage }}%</div>
@@ -122,14 +122,6 @@ function togglePassage(groupId: string) {
       <div class="stat-row">
         <span>뜻 정답</span>
         <span>{{ result.correctMeanings }} / {{ result.totalQuestions }}</span>
-      </div>
-      <div class="stat-row" v-if="result.reviewWordScore.total > 0">
-        <span>새 단어</span>
-        <span>{{ result.newWordScore.correct }} / {{ result.newWordScore.total }}</span>
-      </div>
-      <div class="stat-row" v-if="result.reviewWordScore.total > 0">
-        <span>복습 단어</span>
-        <span>{{ result.reviewWordScore.correct }} / {{ result.reviewWordScore.total }}</span>
       </div>
       <div class="stat-row" v-if="result.conjugationScore.total > 0">
         <span>활용</span>
