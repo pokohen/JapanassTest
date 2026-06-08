@@ -9,7 +9,7 @@ import type {
   QuestionResult,
 } from '../types/word';
 import { formLabelFull } from '../utils/conjugation';
-import { rubyForItemForm, getReadingsForForm, toRubySegments } from '../utils/furigana';
+import { rubyForItemForm, getReadingsForForm, toRubySegments, parseFuriganaMarkup } from '../utils/furigana';
 import FuriganaText from './FuriganaText.vue';
 
 function baseRuby(item: ConjugationItem) {
@@ -271,11 +271,19 @@ function togglePassage(groupId: string) {
             <div v-for="(it, idx) in g.items" :key="idx" class="reading-sub-item">
               <div class="reading-question">
                 <span class="reading-q-num">Q{{ it.indexInGroup }}.</span>
-                {{ it.sub.question }}
+                <FuriganaText :segments="parseFuriganaMarkup(it.sub.questionJa)" />
               </div>
               <div :class="it.correct ? 'correct' : 'wrong'">
-                답: {{ it.selected }}
-                <span v-if="!it.correct" class="answer"> → {{ it.answer }}</span>
+                답:
+                <FuriganaText :segments="parseFuriganaMarkup(it.selected)" />
+                <span v-if="!it.correct" class="answer">
+                  → <FuriganaText :segments="parseFuriganaMarkup(it.answer)" />
+                </span>
+              </div>
+              <div class="reading-ko">
+                <div class="reading-ko-q">🇰🇷 {{ it.sub.question }}</div>
+                <div class="reading-ko-a">정답: {{ it.sub.answer }}</div>
+                <div v-if="it.sub.explanation" class="reading-ko-exp">💡 {{ it.sub.explanation }}</div>
               </div>
             </div>
           </div>
@@ -473,6 +481,18 @@ function togglePassage(groupId: string) {
   gap: 0.25rem;
   font-size: 0.9rem;
 }
+.reading-ko {
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed #e6d4b0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.83rem;
+  color: #555;
+}
+.reading-ko-a { color: #2e7d32; font-weight: 600; }
+.reading-ko-exp { color: #6a4b16; line-height: 1.5; }
 .reading-detail-label {
   font-size: 0.78rem;
   font-weight: 700;

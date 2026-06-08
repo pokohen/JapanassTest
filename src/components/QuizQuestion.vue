@@ -2,7 +2,7 @@
 import { ref, watch, computed } from 'vue';
 import type { QuizQuestion, ConjugationItem, ConjForm } from '../types/word';
 import { formLabel } from '../utils/conjugation';
-import { rubyForItemForm, getReadingsForForm, toRubySegments } from '../utils/furigana';
+import { rubyForItemForm, getReadingsForForm, toRubySegments, parseFuriganaMarkup } from '../utils/furigana';
 import FuriganaText from './FuriganaText.vue';
 
 const props = defineProps<{ question: QuizQuestion }>();
@@ -216,9 +216,6 @@ const canSubmit = computed(() => {
             </template>
           </p>
           <p class="context-translation">{{ question.example.translation }}</p>
-          <p class="conj-sub">
-            힌트: {{ question.item.name }} · {{ question.item.meaning }}
-          </p>
         </div>
       </div>
 
@@ -257,9 +254,6 @@ const canSubmit = computed(() => {
             </template>
           </p>
           <p class="context-translation">{{ question.example.translation }}</p>
-          <p class="conj-sub">
-            힌트: <b>{{ question.item.pattern }}</b> · {{ question.item.name }}
-          </p>
         </div>
       </div>
 
@@ -302,18 +296,18 @@ const canSubmit = computed(() => {
       <div class="section">
         <h3 class="section-title">
           <span class="section-number">?</span>
-          {{ question.sub.question }}
+          <FuriganaText :segments="parseFuriganaMarkup(question.sub.questionJa)" />
         </h3>
         <div class="choices choices-single">
           <button
-            v-for="(choice, i) in question.sub.choices"
+            v-for="(choice, i) in question.sub.choicesJa"
             :key="choice"
             class="choice-btn"
             :class="{ selected: selectedDokkai === choice }"
             @click="selectedDokkai = choice"
           >
             <span class="choice-number">{{ i + 1 }}</span>
-            <span class="reading-choice">{{ choice }}</span>
+            <span class="reading-choice"><FuriganaText :segments="parseFuriganaMarkup(choice)" /></span>
           </button>
         </div>
       </div>

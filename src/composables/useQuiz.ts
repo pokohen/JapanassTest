@@ -153,7 +153,7 @@ export function useQuiz() {
     return subs.map((sub, idx) => ({
       type: "reading",
       passage,
-      sub: { ...sub, choices: shuffle([...sub.choices]) },
+      sub: { ...sub, choicesJa: shuffle([...sub.choicesJa]) },
       groupId: passage.id,
       indexInGroup: idx + 1,
       totalInGroup: total,
@@ -333,13 +333,13 @@ export function useQuiz() {
         });
       } else {
         readingTotal++;
-        const correct = q.selected === q.sub.answer;
+        const correct = q.selected === q.sub.answerJa;
         if (correct) readingCorrect++;
         details.push({
           type: "reading",
           passage: q.passage,
           sub: q.sub,
-          answer: q.sub.answer,
+          answer: q.sub.answerJa,
           selected: q.selected ?? "미응답",
           correct,
           groupId: q.groupId,

@@ -108,13 +108,19 @@ export interface GrammarQuestion {
 }
 
 export interface ReadingSubQuestion {
-  /** 질문 (한국어) */
+  /** 질문 (한국어) — 채점 후 참고/해설용 */
   question: string;
-  /** 4지선다 보기 */
+  /** 4지선다 보기 (한국어) — 채점 후 참고용 */
   choices: string[];
-  /** 정답 (choices 중 하나와 정확히 일치) */
+  /** 정답 (한국어, choices 중 하나와 정확히 일치) */
   answer: string;
-  /** 해설 (선택) */
+  /** 질문 (일본어) — 실제 출제. N4 이상 한자는 {漢字|かな} 후리가나 표기 */
+  questionJa: string;
+  /** 4지선다 보기 (일본어) — 실제 출제. {漢字|かな} 후리가나 표기 */
+  choicesJa: string[];
+  /** 정답 (일본어, choicesJa 중 하나와 정확히 일치) — 채점 기준 */
+  answerJa: string;
+  /** 해설 (한국어) — 채점 후 표시 */
   explanation?: string;
 }
 

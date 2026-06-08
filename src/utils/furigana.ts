@@ -119,6 +119,26 @@ export function toRubySegments(
 }
 
 /**
+ * `{漢字|かな}` 인라인 마크업 문자열을 루비 세그먼트로 변환.
+ * 예: '{大阪|おおさか}で{勉強|べんきょう}する' →
+ *     [{text:'大阪',rt:'おおさか'},{text:'で'},{text:'勉強',rt:'べんきょう'},{text:'する'}]
+ * 마크업이 없는 부분은 그대로 텍스트 세그먼트로 둔다.
+ */
+export function parseFuriganaMarkup(text: string): RubySegment[] {
+  const segments: RubySegment[] = [];
+  const re = /\{([^|}]+)\|([^}]+)\}/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) segments.push({ text: text.slice(last, m.index) });
+    segments.push({ text: m[1], rt: m[2] });
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) segments.push({ text: text.slice(last) });
+  return segments;
+}
+
+/**
  * 활용 아이템과 폼, 그리고 표시할 텍스트(활용된 형태)를 받아서 루비 세그먼트로 변환.
  */
 export function rubyForItemForm(

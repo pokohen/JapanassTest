@@ -23,6 +23,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '富士山に登った___あります。', answer: 'こと', translation: '후지산에 오른 적이 있습니다.' },
       { sentence: '寿司を食べた___がある？', answer: 'こと', translation: '초밥을 먹어본 적이 있어?' },
+      { sentence: '北海道へ行った___がありますか。', answer: 'こと', translation: '홋카이도에 간 적이 있습니까?' },
     ],
   },
 
@@ -35,6 +36,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '私は日本語を話す___ができます。', answer: 'こと', translation: '저는 일본어를 말할 수 있습니다.' },
       { sentence: 'ピアノを弾く___ができますか。', answer: 'こと', translation: '피아노를 칠 수 있어요?' },
+      { sentence: 'まだ漢字を読む___ができません。', answer: 'こと', translation: '아직 한자를 읽을 수 없습니다.' },
     ],
   },
 
@@ -60,6 +62,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '明日は雨が降る___しれません。', answer: 'かも', translation: '내일은 비가 올지도 모릅니다.' },
       { sentence: '彼は来ない___しれない。', answer: 'かも', translation: '그는 안 올지도 몰라.' },
+      { sentence: 'この問題は難しい___しれない。', answer: 'かも', translation: '이 문제는 어려울지도 모른다.' },
     ],
   },
 
@@ -72,6 +75,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '明日は晴れる___。', answer: 'でしょう', translation: '내일은 맑을 거예요.' },
       { sentence: '彼も来る___。', answer: 'でしょう', translation: '그도 올 거예요.' },
+      { sentence: '彼女はもう家に帰った___。', answer: 'でしょう', translation: '그녀는 벌써 집에 돌아갔겠지요.' },
     ],
   },
 
@@ -84,6 +88,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '彼は今日来る___です。', answer: 'はず', translation: '그는 오늘 올 것입니다(올 거예요).' },
       { sentence: 'この答えは正しい___だ。', answer: 'はず', translation: '이 답은 맞을 것이다.' },
+      { sentence: '約束したから、彼は来る___だ。', answer: 'はず', translation: '약속했으니까 그는 올 것이다.' },
     ],
   },
 
@@ -96,6 +101,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '安けれ___、買います。', answer: 'ば', translation: '싸다면 사겠습니다.' },
       { sentence: '春になれ___、桜が咲く。', answer: 'ば', translation: '봄이 되면 벚꽃이 핀다.' },
+      { sentence: '薬を飲め___、よくなりますよ。', answer: 'ば', translation: '약을 먹으면 좋아질 거예요.' },
     ],
   },
 
@@ -121,6 +127,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '日本語を勉強する___、この本がいいですよ。', answer: 'なら', translation: '일본어를 공부한다면 이 책이 좋아요.' },
       { sentence: 'あなたが行く___、私も行く。', answer: 'なら', translation: '당신이 간다면 나도 간다.' },
+      { sentence: '暑い___、窓を開けましょう。', answer: 'なら', translation: '덥다면 창문을 엽시다.' },
     ],
   },
 
@@ -133,6 +140,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '雨が降っ___、行きます。', answer: 'ても', translation: '비가 내려도 가겠습니다.' },
       { sentence: 'いくら食べ___、太らない。', answer: 'ても', translation: '아무리 먹어도 살이 안 찐다.' },
+      { sentence: '値段が高く___、買いたいです。', answer: 'ても', translation: '값이 비싸도 사고 싶습니다.' },
     ],
   },
 
@@ -145,6 +153,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '一生懸命勉強した___、不合格だった。', answer: 'のに', translation: '열심히 공부했는데도 떨어졌다.' },
       { sentence: 'まだ夏な___、寒い。', answer: 'のに', translation: '아직 여름인데 춥다.' },
+      { sentence: '約束した___、彼は来なかった。', answer: 'のに', translation: '약속했는데도 그는 오지 않았다.' },
     ],
   },
 
@@ -157,6 +166,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '頭が痛い___、休みます。', answer: 'ので', translation: '머리가 아파서 쉬겠습니다.' },
       { sentence: '雨が降っている___、傘を持って行く。', answer: 'ので', translation: '비가 오고 있어서 우산을 가지고 간다.' },
+      { sentence: '日曜日な___、店が混んでいる。', answer: 'ので', translation: '일요일이라서 가게가 붐빈다.' },
     ],
   },
 
@@ -169,6 +179,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '健康の___、毎日運動する。', answer: 'ために', translation: '건강을 위해 매일 운동한다.' },
       { sentence: '大学に入る___、勉強しています。', answer: 'ために', translation: '대학에 들어가기 위해 공부하고 있습니다.' },
+      { sentence: '家族の___、一生懸命働きます。', answer: 'ために', translation: '가족을 위해 열심히 일합니다.' },
     ],
   },
 
@@ -181,6 +192,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: 'このケーキはおいし___です。', answer: 'そう', translation: '이 케이크는 맛있어 보여요.' },
       { sentence: '雨が降り___です。', answer: 'そう', translation: '비가 올 것 같아요.' },
+      { sentence: '空が暗くて、今にも降り___です。', answer: 'そう', translation: '하늘이 어두워서 지금이라도 비가 올 것 같아요.' },
     ],
   },
 
@@ -193,6 +205,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '彼は学生___です。', answer: 'みたい', translation: '그는 학생인 것 같아요.' },
       { sentence: '今日は冬___寒い。', answer: 'みたい', translation: '오늘은 겨울처럼 춥다.' },
+      { sentence: '誰かが来た___だ。', answer: 'みたい', translation: '누군가 온 것 같다.' },
     ],
   },
 
@@ -205,6 +218,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '彼は日本に行った___。', answer: 'らしい', translation: '그는 일본에 갔다는 것 같다.' },
       { sentence: '今日は春___天気だ。', answer: 'らしい', translation: '오늘은 봄다운 날씨다.' },
+      { sentence: '彼は試験に合格した___です。', answer: 'らしい', translation: '그는 시험에 합격했다는 것 같아요.' },
     ],
   },
 
@@ -217,6 +231,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: 'この本は読み___です。', answer: 'やすい', translation: '이 책은 읽기 쉬워요.' },
       { sentence: 'この道は歩き___。', answer: 'やすい', translation: '이 길은 걷기 쉽다.' },
+      { sentence: 'このペンは書き___です。', answer: 'やすい', translation: '이 펜은 쓰기 편해요.' },
     ],
   },
 
@@ -229,6 +244,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: 'この字は読み___です。', answer: 'にくい', translation: '이 글자는 읽기 어려워요.' },
       { sentence: 'この靴は歩き___。', answer: 'にくい', translation: '이 신발은 걷기 불편하다.' },
+      { sentence: 'この肉は固くて食べ___。', answer: 'にくい', translation: '이 고기는 질겨서 먹기 힘들다.' },
     ],
   },
 
@@ -241,6 +257,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '早く寝た___がいいよ。', answer: '方', translation: '일찍 자는 편이 좋아.' },
       { sentence: 'タバコは吸わない___がいい。', answer: '方', translation: '담배는 안 피우는 편이 좋다.' },
+      { sentence: '医者に行った___がいいですよ。', answer: '方', translation: '의사에게 가는 편이 좋아요.' },
     ],
   },
 
@@ -253,6 +270,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '宿題をし___ならない。', answer: 'なければ', translation: '숙제를 하지 않으면 안 된다.' },
       { sentence: '明日は早く起き___なりません。', answer: 'なければ', translation: '내일은 일찍 일어나야 합니다.' },
+      { sentence: '毎日薬を飲ま___ならない。', answer: 'なければ', translation: '매일 약을 먹지 않으면 안 된다.' },
     ],
   },
 
@@ -265,6 +283,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: 'ここに座っ___いいですか。', answer: 'ても', translation: '여기 앉아도 됩니까?' },
       { sentence: 'もう帰っ___いいよ。', answer: 'ても', translation: '이제 돌아가도 돼.' },
+      { sentence: 'ここで写真を撮っ___いいですか。', answer: 'ても', translation: '여기서 사진을 찍어도 됩니까?' },
     ],
   },
 
@@ -277,6 +296,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: 'ここで写真を撮っ___いけません。', answer: 'ては', translation: '여기서 사진을 찍으면 안 됩니다.' },
       { sentence: '授業中、話し___いけない。', answer: 'ては', translation: '수업 중에 떠들면 안 된다.' },
+      { sentence: 'ここに車を止め___いけません。', answer: 'ては', translation: '여기에 차를 세우면 안 됩니다.' },
     ],
   },
 
@@ -289,6 +309,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '明日は来___もいいです。', answer: 'なくて', translation: '내일은 안 와도 됩니다.' },
       { sentence: '無理に食べ___もいい。', answer: 'なくて', translation: '억지로 안 먹어도 돼.' },
+      { sentence: '急が___もいいですよ。', answer: 'なくて', translation: '서두르지 않아도 돼요.' },
     ],
   },
 
@@ -301,6 +322,7 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '毎日運動する___しています。', answer: 'ように', translation: '매일 운동하도록 하고 있습니다.' },
       { sentence: '甘いものを食べない___する。', answer: 'ように', translation: '단 것을 안 먹도록 한다.' },
+      { sentence: '野菜をたくさん食べる___しています。', answer: 'ように', translation: '채소를 많이 먹도록 하고 있습니다.' },
     ],
   },
 
@@ -313,6 +335,85 @@ const items: GrammarItem[] = [
     examples: [
       { sentence: '日本語が話せる___なりました。', answer: 'ように', translation: '일본어를 말할 수 있게 되었습니다.' },
       { sentence: '最近、早く起きる___なった。', answer: 'ように', translation: '최근에 일찍 일어나게 되었다.' },
+      { sentence: '練習して、泳げる___なった。', answer: 'ように', translation: '연습해서 헤엄칠 수 있게 되었다.' },
+    ],
+  },
+
+  // ===== いくら～ても =====
+  {
+    pattern: 'いくら～ても',
+    name: '아무리 ~해도',
+    meaning: '아무리 ~해도',
+    description: 'いくら + 동사/형용사 ~ても. "아무리 그렇게 해도 결과는 마찬가지"라는 양보를 나타내요.',
+    examples: [
+      { sentence: '___高くても、これがほしいです。', answer: 'いくら', translation: '아무리 비싸도 이것을 갖고 싶습니다.' },
+      { sentence: '___呼んでも返事がありません。', answer: 'いくら', translation: '아무리 불러도 대답이 없습니다.' },
+      { sentence: '___待っても、バスが来ません。', answer: 'いくら', translation: '아무리 기다려도 버스가 오지 않습니다.' },
+    ],
+  },
+
+  // ===== それほどでもない =====
+  {
+    pattern: 'それほどでもない',
+    name: '그 정도까지는 아니다',
+    meaning: '겸손/부정',
+    description: '칭찬을 받았을 때 "그렇게까지는 아니다"라고 겸손하게 답하거나, 예상만큼은 아니라는 뜻으로 써요.',
+    examples: [
+      { sentence: '「お忙しいですか。」「いいえ、___。」', answer: 'それほどでもない', translation: '"바쁘세요?" "아니요, 그 정도까지는 아니에요."' },
+      { sentence: '人気だと聞いたが、___。', answer: 'それほどでもない', translation: '인기라고 들었지만, 그 정도까지는 아니다.' },
+      { sentence: '「お上手ですね。」「いいえ、___。」', answer: 'それほどでもない', translation: '"잘하시네요." "아니요, 그 정도까지는 아니에요."' },
+    ],
+  },
+
+  // ===== かまいません =====
+  {
+    pattern: 'かまいません',
+    name: '상관없습니다',
+    meaning: '허락/무방',
+    description: '「～てもかまいません」의 형태로 "~해도 상관없다, 괜찮다"는 허락을 정중하게 나타내요.',
+    examples: [
+      { sentence: '少し遅れても___。', answer: 'かまいません', translation: '조금 늦어도 상관없습니다.' },
+      { sentence: 'ここに座っても___か。', answer: 'かまいません', translation: '여기 앉아도 괜찮습니까?' },
+      { sentence: 'ここでタバコを吸っても___か。', answer: 'かまいません', translation: '여기서 담배를 피워도 괜찮습니까?' },
+    ],
+  },
+
+  // ===== いってまいります =====
+  {
+    pattern: 'いってまいります',
+    name: '다녀오겠습니다',
+    meaning: '외출 인사(겸손)',
+    description: '집이나 회사를 나설 때 하는 인사. 「いってきます」보다 정중・겸손한 표현이에요.',
+    examples: [
+      { sentence: 'それでは、会社に___。', answer: 'いってまいります', translation: '그럼, 회사에 다녀오겠습니다.' },
+      { sentence: 'ちょっと郵便局まで___。', answer: 'いってまいります', translation: '잠깐 우체국까지 다녀오겠습니다.' },
+      { sentence: 'お母さん、学校に___。', answer: 'いってまいります', translation: '엄마, 학교에 다녀오겠습니다.' },
+    ],
+  },
+
+  // ===== おかえりなさい =====
+  {
+    pattern: 'おかえりなさい',
+    name: '어서 오세요 / 다녀오셨어요',
+    meaning: '귀가 인사',
+    description: '집에 돌아온 사람을 맞이할 때 하는 인사. 돌아온 사람의 「ただいま」에 대해 「おかえりなさい」라고 답해요.',
+    examples: [
+      { sentence: '「ただいま。」「___。」', answer: 'おかえりなさい', translation: '"다녀왔습니다." "어서 와요."' },
+      { sentence: 'お父さん、___。', answer: 'おかえりなさい', translation: '아빠, 다녀오셨어요.' },
+      { sentence: 'お仕事、お疲れさまです。___。', answer: 'おかえりなさい', translation: '수고하셨어요. 어서 오세요.' },
+    ],
+  },
+
+  // ===== お大事に =====
+  {
+    pattern: 'お大事に',
+    name: '몸조리 잘하세요',
+    meaning: '쾌유 기원 인사',
+    description: '아프거나 병에 걸린 사람에게 "몸조리 잘하세요"라고 위로・기원할 때 쓰는 인사예요.',
+    examples: [
+      { sentence: '風邪が早く治るといいですね。___。', answer: 'お大事に', translation: '감기가 빨리 나으면 좋겠네요. 몸조리 잘하세요.' },
+      { sentence: 'それでは、どうぞ___。', answer: 'お大事に', translation: '그럼, 부디 몸조리 잘하세요.' },
+      { sentence: '熱があるんですか。どうぞ___。', answer: 'お大事に', translation: '열이 있으세요? 부디 몸조리 잘하세요.' },
     ],
   },
 ];
