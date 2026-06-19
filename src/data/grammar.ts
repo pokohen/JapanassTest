@@ -416,6 +416,308 @@ const items: GrammarItem[] = [
       { sentence: '熱があるんですか。どうぞ___。', answer: 'お大事に', translation: '열이 있으세요? 부디 몸조리 잘하세요.' },
     ],
   },
+
+  // ===== JLPT N4 예상 인사말·접속사 추가 (public/word 교재 전사) =====
+
+  // ===== おはようございます =====
+  {
+    pattern: 'おはようございます',
+    name: '안녕하세요 (아침 인사)',
+    meaning: '아침 인사',
+    description: '아침에 만났을 때 하는 정중한 인사예요. 친한 사이에서는 「おはよう」라고 해요.',
+    examples: [
+      { sentence: '朝、先生に「___」とあいさつしました。', answer: 'おはようございます', translation: '아침에 선생님께 "안녕하세요"라고 인사했습니다.' },
+      { sentence: '「___。」「おはよう。」', answer: 'おはようございます', translation: '"안녕하세요." "안녕."' },
+      { sentence: '毎朝、近所の人に「___」と言います。', answer: 'おはようございます', translation: '매일 아침 이웃에게 "안녕하세요"라고 말합니다.' },
+    ],
+  },
+
+  // ===== こんにちは =====
+  {
+    pattern: 'こんにちは',
+    name: '안녕하세요 (낮 인사)',
+    meaning: '낮 인사',
+    description: '낮에 만났을 때 하는 가장 일반적인 인사예요.',
+    examples: [
+      { sentence: '昼間に会ったら「___」とあいさつします。', answer: 'こんにちは', translation: '낮에 만나면 "안녕하세요"라고 인사합니다.' },
+      { sentence: '「___。」「こんにちは、お元気ですか。」', answer: 'こんにちは', translation: '"안녕하세요." "안녕하세요, 잘 지내세요?"' },
+      { sentence: '先生に「___」と言いました。', answer: 'こんにちは', translation: '선생님께 "안녕하세요"라고 했습니다.' },
+    ],
+  },
+
+  // ===== こんばんは =====
+  {
+    pattern: 'こんばんは',
+    name: '안녕하세요 (저녁 인사)',
+    meaning: '저녁 인사',
+    description: '저녁이나 밤에 만났을 때 하는 인사예요.',
+    examples: [
+      { sentence: '夜、友達に会って「___」と言いました。', answer: 'こんばんは', translation: '밤에 친구를 만나 "안녕하세요"라고 했습니다.' },
+      { sentence: '「___。」「こんばんは。」', answer: 'こんばんは', translation: '"안녕하세요." "안녕하세요."' },
+      { sentence: '店に入ると、店員が「___」と言った。', answer: 'こんばんは', translation: '가게에 들어가자 점원이 "안녕하세요"라고 했다.' },
+    ],
+  },
+
+  // ===== ただいま =====
+  {
+    pattern: 'ただいま',
+    name: '다녀왔습니다',
+    meaning: '귀가 인사',
+    description: '집에 돌아왔을 때 하는 인사예요. 맞이하는 사람은 「おかえりなさい」라고 답해요.',
+    examples: [
+      { sentence: '家に帰って「___」と言いました。', answer: 'ただいま', translation: '집에 돌아와 "다녀왔습니다"라고 했습니다.' },
+      { sentence: '「___。」「おかえりなさい。」', answer: 'ただいま', translation: '"다녀왔습니다." "어서 와요."' },
+      { sentence: '仕事から帰って「___」と言った。', answer: 'ただいま', translation: '일에서 돌아와 "다녀왔습니다"라고 했다.' },
+    ],
+  },
+
+  // ===== おげんきで =====
+  {
+    pattern: 'おげんきで',
+    name: '건강하세요',
+    meaning: '작별 인사',
+    description: '한동안 만나지 못할 사람과 헤어질 때 "건강하세요"라고 하는 인사예요.',
+    examples: [
+      { sentence: 'しばらく会えませんね。どうぞ___。', answer: 'おげんきで', translation: '한동안 못 만나겠네요. 부디 건강하세요.' },
+      { sentence: '「___。」「ありがとう。あなたも。」', answer: 'おげんきで', translation: '"건강하세요." "고마워요. 당신도요."' },
+      { sentence: '別れるとき、「___」とあいさつしました。', answer: 'おげんきで', translation: '헤어질 때 "건강하세요"라고 인사했습니다.' },
+    ],
+  },
+
+  // ===== おじゃまします =====
+  {
+    pattern: 'おじゃまします',
+    name: '실례하겠습니다 (방문)',
+    meaning: '방문 인사',
+    description: '남의 집이나 방에 들어갈 때 하는 인사예요. 직역하면 "방해하겠습니다"예요.',
+    examples: [
+      { sentence: '友達の家に入るとき、「___」と言います。', answer: 'おじゃまします', translation: '친구 집에 들어갈 때 "실례하겠습니다"라고 합니다.' },
+      { sentence: '「どうぞ。」「では、___。」', answer: 'おじゃまします', translation: '"들어오세요." "그럼, 실례하겠습니다."' },
+      { sentence: '部屋に入る前に「___」と言った。', answer: 'おじゃまします', translation: '방에 들어가기 전에 "실례하겠습니다"라고 했다.' },
+    ],
+  },
+
+  // ===== こちらこそ =====
+  {
+    pattern: 'こちらこそ',
+    name: '저야말로',
+    meaning: '응답 인사',
+    description: '상대의 감사나 인사에 "저야말로"라고 되받을 때 쓰는 표현이에요.',
+    examples: [
+      { sentence: '「ありがとうございました。」「___、ありがとうございました。」', answer: 'こちらこそ', translation: '"감사했습니다." "저야말로 감사했습니다."' },
+      { sentence: '「お世話になりました。」「いいえ、___。」', answer: 'こちらこそ', translation: '"신세 많이 졌습니다." "아니요, 저야말로요."' },
+      { sentence: '「よろしくお願いします。」「___、よろしく。」', answer: 'こちらこそ', translation: '"잘 부탁드립니다." "저야말로 잘 부탁드려요."' },
+    ],
+  },
+
+  // ===== ごめんなさい =====
+  {
+    pattern: 'ごめんなさい',
+    name: '죄송해요 / 미안해요',
+    meaning: '사과',
+    description: '잘못했을 때 사과하는 표현이에요. 「すみません」보다 개인적이고 친근한 느낌이에요.',
+    examples: [
+      { sentence: '遅れて___。', answer: 'ごめんなさい', translation: '늦어서 죄송해요.' },
+      { sentence: '約束を忘れて「___」とあやまった。', answer: 'ごめんなさい', translation: '약속을 잊어버려 "미안해요"라고 사과했다.' },
+      { sentence: '「___、わざとじゃないんです。」', answer: 'ごめんなさい', translation: '"미안해요, 일부러 그런 게 아니에요."' },
+    ],
+  },
+
+  // ===== ごめんください =====
+  {
+    pattern: 'ごめんください',
+    name: '실례합니다 (방문)',
+    meaning: '방문해 부르는 말',
+    description: '남의 집을 방문해 현관에서 사람을 부를 때 하는 인사예요.',
+    examples: [
+      { sentence: '玄関で「___」と言いました。', answer: 'ごめんください', translation: '현관에서 "실례합니다"라고 했습니다.' },
+      { sentence: '「___。」「はい、どなたですか。」', answer: 'ごめんください', translation: '"실례합니다." "네, 누구세요?"' },
+      { sentence: '人の家を訪ねて「___」と声をかけた。', answer: 'ごめんください', translation: '남의 집을 찾아가 "실례합니다"라고 불렀다.' },
+    ],
+  },
+
+  // ===== すみません =====
+  {
+    pattern: 'すみません',
+    name: '미안합니다 / 실례합니다',
+    meaning: '사과·부탁·호칭',
+    description: '사과할 때, 사람을 부를 때, 부탁할 때 두루 쓰는 편리한 표현이에요.',
+    examples: [
+      { sentence: '「___、駅はどこですか。」', answer: 'すみません', translation: '"실례합니다, 역은 어디예요?"' },
+      { sentence: '足をふんでしまって「___」と言った。', answer: 'すみません', translation: '발을 밟아버려 "죄송합니다"라고 했다.' },
+      { sentence: '「___、お水をください。」', answer: 'すみません', translation: '"저기요, 물 좀 주세요."' },
+    ],
+  },
+
+  // ===== しつれいします =====
+  {
+    pattern: 'しつれいします',
+    name: '실례합니다',
+    meaning: '들고날 때 인사',
+    description: '방에 들어가거나 나갈 때, 전화를 끊을 때 등에 쓰는 정중한 인사예요.',
+    examples: [
+      { sentence: '部屋に入るとき、「___」と言いました。', answer: 'しつれいします', translation: '방에 들어갈 때 "실례합니다"라고 했습니다.' },
+      { sentence: '先に帰るので「お先に___」と言った。', answer: 'しつれいします', translation: '먼저 가기에 "먼저 실례하겠습니다"라고 했다.' },
+      { sentence: '電話を切る前に「では、___」と言いました。', answer: 'しつれいします', translation: '전화를 끊기 전에 "그럼, 실례하겠습니다"라고 했습니다.' },
+    ],
+  },
+
+  // ===== どういたしまして =====
+  {
+    pattern: 'どういたしまして',
+    name: '천만에요',
+    meaning: '감사에 대한 응답',
+    description: '상대가 「ありがとう」라고 했을 때 "천만에요"라고 답하는 표현이에요.',
+    examples: [
+      { sentence: '「ありがとう。」「___。」', answer: 'どういたしまして', translation: '"고마워." "천만에요."' },
+      { sentence: '「手伝ってくれてありがとう。」「___。」', answer: 'どういたしまして', translation: '"도와줘서 고마워." "천만에요."' },
+      { sentence: '「いいえ、___。」', answer: 'どういたしまして', translation: '"아니요, 천만에요."' },
+    ],
+  },
+
+  // ===== おめでとう =====
+  {
+    pattern: 'おめでとう',
+    name: '축하해(요)',
+    meaning: '축하 인사',
+    description: '경사스러운 일을 축하할 때 쓰는 표현이에요. 정중하게는 「おめでとうございます」라고 해요.',
+    examples: [
+      { sentence: '合格して、友達に「___」と言われた。', answer: 'おめでとう', translation: '합격해서 친구에게 "축하해"라는 말을 들었다.' },
+      { sentence: '「誕生日___ございます。」', answer: 'おめでとう', translation: '"생일 축하합니다."' },
+      { sentence: '「ご結婚、___ございます。」', answer: 'おめでとう', translation: '"결혼 축하합니다."' },
+    ],
+  },
+
+  // ===== いかがですか =====
+  {
+    pattern: 'いかがですか',
+    name: '어떠십니까',
+    meaning: '권유·안부 (정중)',
+    description: '「どうですか」의 정중한 표현으로, 권유하거나 상태·의견을 물을 때 써요.',
+    examples: [
+      { sentence: 'コーヒーを一杯、___。', answer: 'いかがですか', translation: '커피 한 잔, 어떠세요?' },
+      { sentence: 'お体の調子は___。', answer: 'いかがですか', translation: '몸 상태는 어떠세요?' },
+      { sentence: 'もう一つ___。', answer: 'いかがですか', translation: '하나 더 어떠세요?' },
+    ],
+  },
+
+  // ===== しかし =====
+  {
+    pattern: 'しかし',
+    name: '그러나',
+    meaning: '역접 접속사',
+    description: '앞 문장과 반대되는 내용을 이을 때 쓰는 딱딱한 역접 접속사예요.',
+    examples: [
+      { sentence: '一生懸命勉強した。___、試験に落ちた。', answer: 'しかし', translation: '열심히 공부했다. 그러나 시험에 떨어졌다.' },
+      { sentence: '彼は若い。___、考え方は大人だ。', answer: 'しかし', translation: '그는 젊다. 그러나 사고방식은 어른스럽다.' },
+      { sentence: '雨が降っていた。___、試合は続いた。', answer: 'しかし', translation: '비가 내리고 있었다. 그러나 경기는 계속되었다.' },
+    ],
+  },
+
+  // ===== けれども =====
+  {
+    pattern: 'けれども',
+    name: '그렇지만 / ~지만',
+    meaning: '역접',
+    description: '문장이나 절을 잇는 역접 표현으로, 「が」보다 부드러워요. "~지만"의 뜻이에요.',
+    examples: [
+      { sentence: 'この店は安い___、あまりおいしくない。', answer: 'けれども', translation: '이 가게는 싸지만 별로 맛있지 않다.' },
+      { sentence: '行きたい___、時間がありません。', answer: 'けれども', translation: '가고 싶지만 시간이 없습니다.' },
+      { sentence: 'たくさん食べた___、まだおなかがすいている。', answer: 'けれども', translation: '많이 먹었지만 아직 배가 고프다.' },
+    ],
+  },
+
+  // ===== それから =====
+  {
+    pattern: 'それから',
+    name: '그러고 나서 / 그리고',
+    meaning: '순서·첨가 접속사',
+    description: '"그 다음에", "그리고"라는 뜻으로 일의 순서나 추가를 나타내요.',
+    examples: [
+      { sentence: '朝ごはんを食べた。___、学校へ行った。', answer: 'それから', translation: '아침을 먹었다. 그러고 나서 학교에 갔다.' },
+      { sentence: '宿題をした。___、テレビを見た。', answer: 'それから', translation: '숙제를 했다. 그러고 나서 TV를 봤다.' },
+      { sentence: 'パンとたまご、___牛乳を買いました。', answer: 'それから', translation: '빵과 달걀, 그리고 우유를 샀습니다.' },
+    ],
+  },
+
+  // ===== どんなに～ても =====
+  {
+    pattern: 'どんなに～ても',
+    name: '아무리 ~해도',
+    meaning: '양보 (강조)',
+    description: 'どんなに + 동사/형용사 ~ても. 정도가 아무리 심해도 결과는 같다는 강한 양보를 나타내요.',
+    examples: [
+      { sentence: '___急いでも、間に合いません。', answer: 'どんなに', translation: '아무리 서둘러도 시간에 맞출 수 없습니다.' },
+      { sentence: '___高くても買います。', answer: 'どんなに', translation: '아무리 비싸도 사겠습니다.' },
+      { sentence: '___説明しても、彼は分かってくれない。', answer: 'どんなに', translation: '아무리 설명해도 그는 이해해 주지 않는다.' },
+    ],
+  },
+
+  // ===== ～はじめる =====
+  {
+    pattern: '～はじめる',
+    name: '~하기 시작하다',
+    meaning: '동작의 시작',
+    description: '동사 ます형 + はじめる. 어떤 동작이나 변화가 시작됨을 나타내요.',
+    examples: [
+      { sentence: '急に雨が降り___ました。', answer: 'はじめ', translation: '갑자기 비가 내리기 시작했습니다.' },
+      { sentence: '子どもが歩き___ました。', answer: 'はじめ', translation: '아이가 걷기 시작했습니다.' },
+      { sentence: '日本語を習い___て、半年になります。', answer: 'はじめ', translation: '일본어를 배우기 시작한 지 반년이 됩니다.' },
+    ],
+  },
+
+  // ===== ～つづける =====
+  {
+    pattern: '～つづける',
+    name: '계속 ~하다',
+    meaning: '동작의 지속',
+    description: '동사 ます형 + つづける. 동작을 도중에 멈추지 않고 계속함을 나타내요.',
+    examples: [
+      { sentence: '3時間も歩き___た。', answer: 'つづけ', translation: '세 시간이나 계속 걸었다.' },
+      { sentence: '彼は走り___ている。', answer: 'つづけ', translation: '그는 계속 달리고 있다.' },
+      { sentence: '雨が朝から降り___ています。', answer: 'つづけ', translation: '비가 아침부터 계속 내리고 있습니다.' },
+    ],
+  },
+
+  // ===== ～だい (台) =====
+  {
+    pattern: '～だい (台)',
+    name: '~대 (차·기계를 세는 말)',
+    meaning: '조수사 (台)',
+    description: '자동차·기계·가전 등을 셀 때 쓰는 조수사예요. 一台(いちだい), 二台(にだい)…처럼 세요.',
+    examples: [
+      { sentence: '駐車場に車が3___あります。', answer: '台', translation: '주차장에 차가 세 대 있습니다.' },
+      { sentence: 'テレビを2___買いました。', answer: '台', translation: 'TV를 두 대 샀습니다.' },
+      { sentence: 'この会社はパソコンが何___ありますか。', answer: '台', translation: '이 회사는 컴퓨터가 몇 대 있습니까?' },
+    ],
+  },
+
+  // ===== ～けん (軒) =====
+  {
+    pattern: '～けん (軒)',
+    name: '~채 (집을 세는 말)',
+    meaning: '조수사 (軒)',
+    description: '집이나 가게를 셀 때 쓰는 조수사예요. 一軒(いっけん), 二軒(にけん)…처럼 세요.',
+    examples: [
+      { sentence: 'この道には店が3___あります。', answer: '軒', translation: '이 길에는 가게가 세 채 있습니다.' },
+      { sentence: '近所に新しい家が一___建ちました。', answer: '軒', translation: '근처에 새 집이 한 채 지어졌습니다.' },
+      { sentence: 'パン屋が2___並んでいます。', answer: '軒', translation: '빵집이 두 채 늘어서 있습니다.' },
+    ],
+  },
+
+  // ===== ～だて (建て) =====
+  {
+    pattern: '～だて (建て)',
+    name: '~층 건물',
+    meaning: '건물 층수 (建て)',
+    description: '「数＋階建て」의 형태로 건물이 몇 층짜리인지 나타내요. 五階建て(ごかいだて)처럼 써요.',
+    examples: [
+      { sentence: '駅前に10階___のビルがあります。', answer: '建て', translation: '역 앞에 10층 건물 빌딩이 있습니다.' },
+      { sentence: 'わたしの家は2階___です。', answer: '建て', translation: '우리 집은 2층 건물입니다.' },
+      { sentence: 'あの3階___の建物は図書館です。', answer: '建て', translation: '저 3층짜리 건물은 도서관입니다.' },
+    ],
+  },
+
 ];
 
 export default items;
